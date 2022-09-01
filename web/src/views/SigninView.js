@@ -6,7 +6,7 @@ export default class extends AbstractView{
         this.setTitle("Signin");
     }
     async getHtml(){
-        //posts
+        //signin
         return `
         `;
     }

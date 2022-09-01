@@ -6,7 +6,7 @@ export default class extends AbstractView{
         this.setTitle("Posts");
     }
     async getHtml(){
-        //posts
+        //post
         return `
         `;
     }

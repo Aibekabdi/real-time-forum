@@ -2,7 +2,9 @@ import Post from "./views/PostView.js";
 import Chats from "./views/ChatsView.js";
 import Signin from "./views/SigninView.js";
 import Signup from "./views/SignupView.js";
-
+import Home from "./views/HomeView.js";
+import Profile from "./views/ProfileView.js";
+import NewPost from "./views/NewPostView.js";
 
 
 const navigateTo = url => {
@@ -12,13 +14,16 @@ const navigateTo = url => {
 
 const router = async () => {
     const routes = [
-        {path: "/", view: Post},
+        {path: "/", view: Home},
         {path: "/sign-in", view: Signin},
         {path: "/sign-up", view: Signup},
         {path: "/chats", view: Chats},
+        {path: "/post/:postID", view: Post},
+        {path: "/user/:userID", view: Profile},
+        {path: "/new-post", view: NewPost},
     ];
 
-    //
+    // Test each route for potential match
     const potentialMatches = routes.map(route => {
         return {
             route : route,
@@ -37,7 +42,6 @@ const router = async () => {
     
     const view = new match.route.view();
     document.querySelector("#app").innerHTML = await view.getHtml();
-
 };
 
 window.addEventListener("popstate", router);
