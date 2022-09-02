@@ -6,6 +6,17 @@ import Home from "./views/HomeView.js";
 import Profile from "./views/ProfileView.js";
 import NewPost from "./views/NewPostView.js";
 
+const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+
+const getParams = match => {
+    const values = match.result.slice(1);
+    const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+    
+    return Object.fromEntries(keys.map((key, i) => {
+        console.log([key, values[i]])
+        return [key, values[i]];
+    }));
+};
 
 const navigateTo = url => {
     history.pushState(null , null, url);
@@ -27,11 +38,11 @@ const router = async () => {
     const potentialMatches = routes.map(route => {
         return {
             route : route,
-            isMatch: location.pathname === route.path
+            result: location.pathname.match(pathToRegex(route.path))
         };
     });
     
-    let match = potentialMatches.find(potentialMatch => potentialMatch.isMatch)
+    let match = potentialMatches.find(potentialMatch => potentialMatch.result !== null)
     
     if (!match) {
         match = {
@@ -40,7 +51,8 @@ const router = async () => {
         };
     }
     
-    const view = new match.route.view();
+    const view = new match.route.view(getParams(match));
+
     document.querySelector("#app").innerHTML = await view.getHtml();
 };
 
