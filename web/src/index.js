@@ -5,6 +5,7 @@ import Signup from "./views/SignupView.js";
 import Home from "./views/HomeView.js";
 import Profile from "./views/ProfileView.js";
 import NewPost from "./views/NewPostView.js";
+import NavBar from "./views/NavBarView.js";
 
 const pathToRegex = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
 
@@ -13,7 +14,6 @@ const getParams = match => {
     const keys = Array.from(match.route.path.matchAll(/:(\w+)/g)).map(result => result[1]);
     
     return Object.fromEntries(keys.map((key, i) => {
-        console.log([key, values[i]])
         return [key, values[i]];
     }));
 };
@@ -31,7 +31,7 @@ const router = async () => {
         {path: "/chats", view: Chats},
         {path: "/post/:postID", view: Post},
         {path: "/user/:userID", view: Profile},
-        {path: "/new-post", view: NewPost},
+        {path: "/create-post", view: NewPost},
     ];
 
     // Test each route for potential match
@@ -47,10 +47,13 @@ const router = async () => {
     if (!match) {
         match = {
             route: routes[0],
-            isMatch: true
+            result: [location.pathname]
         };
     }
     
+    const NavBarView = new NavBar(null);
+    document.querySelector("#navbar").innerHTML = await NavBarView.getHtml();
+
     const view = new match.route.view(getParams(match));
 
     document.querySelector("#app").innerHTML = await view.getHtml();

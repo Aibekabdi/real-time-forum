@@ -9,7 +9,7 @@ import (
 func main() {
 	fs := http.FileServer(http.Dir("./web/src"))
 	http.Handle("/src/", http.StripPrefix("/src/", fs))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
 		indexTmpl, err := template.ParseFiles("./web/index.html")
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
