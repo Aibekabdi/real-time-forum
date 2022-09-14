@@ -31,52 +31,57 @@ func (h *Handler) createRoutes() []Route {
 	return []Route{
 		{
 			Path:    "/",
-			Handler: nil,
+			Handler: h.indexPage,
 			IsAuth:  false,
 		},
 		{
 			Path:    "/sign-up",
-			Handler: nil,
+			Handler: h.signup,
 			IsAuth:  false,
 		},
 		{
 			Path:    "/sign-in",
-			Handler: nil,
+			Handler: h.signin,
 			IsAuth:  false,
 		},
 		{
 			Path:    "/sign-out",
-			Handler: nil,
+			Handler: h.signout,
 			IsAuth:  true,
 		},
 		{
 			Path:    "/profile",
-			Handler: nil,
+			Handler: h.profile,
 			IsAuth:  true,
 		},
 		{
 			Path:    "/posts/create",
-			Handler: nil,
+			Handler: h.createPost,
 			IsAuth:  true,
 		},
 		{
 			Path:    "/posts",
-			Handler: nil,
+			Handler: h.posts,
 			IsAuth:  false,
 		},
 		{
 			Path:    "/posts/id",
-			Handler: nil,
+			Handler: h.post,
 			IsAuth:  false,
 		},
 		{
-			Path:    "/vote",
-			Handler: nil,
+			Path:    "/vote/post",
+			Handler: h.votePost,
+			IsAuth:  true,
+		},
+		{
+			Path:    "/vote/comment",
+			Handler: h.voteComment,
 			IsAuth:  true,
 		},
 		{
 			Path:    "/comment",
-			Handler: nil,
+			Handler: h.createComment,
 			IsAuth:  true,
 		},
 		{
