@@ -65,7 +65,7 @@ func (h *Handler) createRoutes() []Route {
 			IsAuth:  false,
 		},
 		{
-			Path:    "/posts/id",
+			Path:    "/posts/:id",
 			Handler: h.post,
 			IsAuth:  false,
 		},
@@ -86,7 +86,7 @@ func (h *Handler) createRoutes() []Route {
 		},
 		{
 			Path:    "/chat",
-			Handler: nil,
+			Handler: h.chat,
 			IsAuth:  true,
 		},
 	}
