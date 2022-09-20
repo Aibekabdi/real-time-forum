@@ -34,11 +34,6 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 func (h *Handler) createRoutes() []Route {
 	return []Route{
 		{
-			Path:    "/",
-			Handler: h.indexPage,
-			IsAuth:  false,
-		},
-		{
 			Path:    "/sign-up",
 			Handler: h.signup,
 			IsAuth:  false,

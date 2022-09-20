@@ -1,12 +1,17 @@
 package main
 
 import (
+	"forum/internal/config"
 	"log"
 	"net/http"
 	"text/template"
 )
 
 func main() {
+	conf, err := config.NewConfig("./configs/config.json")
+	if err != nil {
+		log.Fatalf("error occured while trying to parse config: %s", err.Error())
+	}
 	fs := http.FileServer(http.Dir("./web/src"))
 	http.Handle("/src/", http.StripPrefix("/src/", fs))
 	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
@@ -21,7 +26,7 @@ func main() {
 		}
 	})
 	log.Printf("Frontend server is starting at %v", "8081")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	if err := http.ListenAndServe(":"+conf.Client.Port, nil); err != nil {
 		log.Fatalln(err)
 	}
 }
