@@ -1,6 +1,9 @@
 package http
 
-import "net/http"
+import (
+	"forum/internal/service"
+	"net/http"
+)
 
 type Route struct {
 	Path    string
@@ -9,9 +12,10 @@ type Route struct {
 }
 
 type Handler struct {
+	services *service.Service
 }
 
-func NewHandler() *Handler {
+func NewHandler(service *service.Service) *Handler {
 	return &Handler{}
 }
 
@@ -20,7 +24,7 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 	routes := h.createRoutes()
 	for _, route := range routes {
 		if route.IsAuth {
-			// todo checks cookie
+			route.Handler = h.isSessionValid(route.Handler)
 		}
 		mux.HandleFunc(route.Path, route.Handler)
 	}
