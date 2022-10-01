@@ -1,11 +1,20 @@
 package http
 
-import "net/http"
+import (
+	"log"
+	"net/http"
+)
 
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
+		_, _, user, _, _, err := GetJsonData(w, r, "user")
+		if err != nil {
+			jsonResponse(w, r, http.StatusBadRequest, err.Error())
+			return
+		}
+		log.Println(user)
 		//todo signup
-
+		//redirect to signin
 	} else {
 		jsonResponse(w, r, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -15,7 +24,7 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) signin(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		//todo signin
-
+		//if login succeded , redirect to main page
 	} else {
 		jsonResponse(w, r, http.StatusMethodNotAllowed, "method not allowed")
 		return

@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"forum/internal/models"
 	"io/ioutil"
 	"net/http"
@@ -41,6 +42,9 @@ func GetJsonData(w http.ResponseWriter, r *http.Request, class string) (*models.
 		err = json.Unmarshal(body, &cr)
 	case "postRating":
 		err = json.Unmarshal(body, &pr)
+	default:
+		return nil, nil, nil, nil, nil, errors.New("no such class")
+
 	}
 	if err != nil {
 		return nil, nil, nil, nil, nil, err
