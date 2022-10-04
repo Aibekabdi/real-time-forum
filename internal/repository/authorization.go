@@ -3,6 +3,8 @@ package repository
 import (
 	"database/sql"
 	"forum/internal/models"
+
+	"errors"
 )
 
 type AuthorizationRepository struct {
@@ -14,5 +16,8 @@ func newAuthorizationRepository(db *sql.DB) *AuthorizationRepository {
 }
 
 func (a AuthorizationRepository) Signup(input *models.User) error {
+	if _, err := a.db.Exec("INSERT INTO User(email, nickname, first_name, last_name, password, gender, age) VALUES (?,?,?,?,?,?,?)", input.Email, input.Nickname, input.FirstName, input.LastName, input.Password, input.Gender, input.Age); err != nil {
+		return errors.New("email or username is already exist, try another ones")
+	}
 	return nil
 }

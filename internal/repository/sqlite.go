@@ -43,7 +43,7 @@ func createTables(db *sql.DB) error {
 		last_name TEXT NOT NULL,
 		password TEXT NOT NULL,
 		gender Text NOT NULL,
-		age INTEGER NOT NULL
+		age TEXT NOT NULL
 	)
 	`); err != nil {
 		return err

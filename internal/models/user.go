@@ -8,5 +8,5 @@ type User struct {
 	LastName  string `json:"lastname"`
 	Password  string `json:"password"`
 	Age       string `json:"age"`
-	Genger    string `json:"gender"`
+	Gender    string `json:"gender"`
 }

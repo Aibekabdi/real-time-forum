@@ -15,7 +15,6 @@ func newAuthorizationService(repo repository.Authorization) *AuthorizationServic
 }
 
 func (a *AuthorizationService) Signup(input *models.User) error {
-
 	if err := isEmailValid(input.Email); err != nil {
 		return err
 	} else if err := isPasswordValid(input.Password); err != nil {
@@ -24,7 +23,7 @@ func (a *AuthorizationService) Signup(input *models.User) error {
 		return errors.New("empty first name field")
 	} else if isEmpty(input.LastName) {
 		return errors.New("empty last name field")
-	} else if isEmpty(input.Genger) {
+	} else if isEmpty(input.Gender) {
 		return errors.New("empty gender field")
 	} else if isEmpty(input.Age) {
 		return errors.New("empty age field")
