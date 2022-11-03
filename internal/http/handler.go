@@ -2,7 +2,9 @@ package http
 
 import (
 	"forum/internal/service"
+	"log"
 	"net/http"
+	"text/template"
 )
 
 type Route struct {
@@ -28,63 +30,74 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 		}
 		mux.HandleFunc(route.Path, route.Handler)
 	}
+	fs := http.FileServer(http.Dir("./web/src"))
+	mux.Handle("/src/", http.StripPrefix("/src/", fs))
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		indexTmpl, err := template.ParseFiles("./web/index.html")
+		if err != nil {
+			jsonResponse(w, r, http.StatusInternalServerError, err.Error())
+		} else if err := indexTmpl.Execute(w, nil); err != nil {
+			jsonResponse(w, r, http.StatusInternalServerError, err.Error())
+		}
+	})
+	log.Println("http://localhost:8080/")
 	return mux
 }
 
 func (h *Handler) createRoutes() []Route {
 	return []Route{
 		{
-			Path:    "/sign-up",
+			Path:    "/api/sign-up",
 			Handler: h.signup,
 			IsAuth:  false,
 		},
 		{
-			Path:    "/sign-in",
+			Path:    "/api/sign-in",
 			Handler: h.signin,
 			IsAuth:  false,
 		},
 		{
-			Path:    "/sign-out",
+			Path:    "/api/sign-out",
 			Handler: h.signout,
 			IsAuth:  true,
 		},
 		{
-			Path:    "/profile",
+			Path:    "/api/profile",
 			Handler: h.profile,
 			IsAuth:  true,
 		},
 		{
-			Path:    "/posts/create",
+			Path:    "/api/posts/create",
 			Handler: h.createPost,
 			IsAuth:  true,
 		},
 		{
-			Path:    "/posts",
+			Path:    "/api/posts",
 			Handler: h.posts,
 			IsAuth:  false,
 		},
 		{
-			Path:    "/posts/:id",
+			Path:    "/api/posts/:id",
 			Handler: h.post,
 			IsAuth:  false,
 		},
 		{
-			Path:    "/vote/post",
+			Path:    "/api/vote/post",
 			Handler: h.votePost,
 			IsAuth:  true,
 		},
 		{
-			Path:    "/vote/comment",
+			Path:    "/api/vote/comment",
 			Handler: h.voteComment,
 			IsAuth:  true,
 		},
 		{
-			Path:    "/comment",
+			Path:    "/api/comment",
 			Handler: h.createComment,
 			IsAuth:  true,
 		},
 		{
-			Path:    "/chat",
+			Path:    "/api/chat",
 			Handler: h.chat,
 			IsAuth:  true,
 		},
