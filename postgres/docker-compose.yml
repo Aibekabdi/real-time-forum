@@ -1,0 +1,16 @@
+version: '3.5'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwerty
+    ports:
+      - "5432:5432"
+
+volumes:
+  db:
+    driver: local
