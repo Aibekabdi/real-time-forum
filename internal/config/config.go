@@ -2,25 +2,27 @@ package config
 
 import (
 	"encoding/json"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type (
 	Conf struct {
 		Api      Api      `json:"api"`
-		Client   Client   `json:"client"`
 		Database Database `json:"database"`
 	}
 	Api struct {
 		Port string `json:"port"`
 	}
-	Client struct {
-		Port string `json:"port"`
-	}
 	Database struct {
-		Driver   string `json:"driver"`
-		Path     string `json:"path"`
-		FileName string `json:"fileName"`
+		Host     string `json:"host"`
+		Port     string `json:"port"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+		DBName   string `json:"dbname"`
+		SSLMode  string `json:"sslmode"`
 	}
 )
 
@@ -34,5 +36,9 @@ func NewConfig(configPath string) (*Conf, error) {
 	if err = decoder.Decode(&config); err != nil {
 		return nil, err
 	}
+	if err := godotenv.Load(); err != nil {
+		log.Fatalf("error loading env variable: %s", err.Error())
+	}
+	config.Database.Password = os.Getenv("DB_PASSWORD")
 	return &config, nil
 }

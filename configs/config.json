@@ -3,8 +3,10 @@
         "port": "8080"
     },
     "database": {
-        "driver": "sqlite3",
-        "path" : "./sqlite",
-        "fileName": "forum.db"
+        "username": "postgres",
+        "host": "localhost",
+        "port": "5432",
+        "dbname": "postgres",
+        "sslmode": "disable"
     }
 }

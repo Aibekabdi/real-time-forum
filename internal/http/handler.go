@@ -2,7 +2,6 @@ package http
 
 import (
 	"forum/internal/service"
-	"log"
 	"net/http"
 	"text/template"
 )
@@ -40,7 +39,6 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 			jsonResponse(w, r, http.StatusInternalServerError, err.Error())
 		}
 	})
-	log.Println("http://localhost:8080/")
 	return mux
 }
 

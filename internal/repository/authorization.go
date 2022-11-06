@@ -1,17 +1,18 @@
 package repository
 
 import (
-	"database/sql"
 	"forum/internal/models"
 
 	"errors"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type AuthorizationRepository struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func newAuthorizationRepository(db *sql.DB) *AuthorizationRepository {
+func newAuthorizationRepository(db *sqlx.DB) *AuthorizationRepository {
 	return &AuthorizationRepository{db: db}
 }
 
