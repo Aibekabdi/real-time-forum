@@ -2,8 +2,8 @@ package http
 
 import (
 	"forum/internal/service"
+	"html/template"
 	"net/http"
-	"text/template"
 )
 
 type Route struct {

@@ -22,7 +22,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to initialize db: %s", err.Error())
 	}
-
 	repo := repository.NewRepository(db)
 	services := service.NewService(repo)
 	handlers := http.NewHandler(services)

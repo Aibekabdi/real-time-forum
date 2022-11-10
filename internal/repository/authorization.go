@@ -1,24 +1,26 @@
 package repository
 
 import (
+	"database/sql"
 	"forum/internal/models"
-
-	"errors"
-
-	"github.com/jmoiron/sqlx"
 )
 
 type AuthorizationRepository struct {
-	db *sqlx.DB
+	db *sql.DB
 }
 
-func newAuthorizationRepository(db *sqlx.DB) *AuthorizationRepository {
+func newAuthorizationRepository(db *sql.DB) *AuthorizationRepository {
 	return &AuthorizationRepository{db: db}
 }
 
 func (a AuthorizationRepository) Signup(input *models.User) error {
-	if _, err := a.db.Exec("INSERT INTO User(email, nickname, first_name, last_name, password, gender, age) VALUES (?,?,?,?,?,?,?)", input.Email, input.Nickname, input.FirstName, input.LastName, input.Password, input.Gender, input.Age); err != nil {
-		return errors.New("email or username is already exist, try another ones")
+	stmt, err := a.db.Prepare("INSERT INTO users(email, username, firstname, lastname, password_hash, gender, age) VALUES ($1,$2,$3,$4,$5,$6,$7);")
+	if err != nil {
+		return err
 	}
+	if _, err := stmt.Exec(input.Email, input.Nickname, input.FirstName, input.LastName, input.Password, input.Gender, input.Age); err != nil {
+		return err
+	}
+	stmt.Close()
 	return nil
 }
