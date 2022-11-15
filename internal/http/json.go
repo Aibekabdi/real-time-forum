@@ -21,7 +21,7 @@ func jsonResponse(w http.ResponseWriter, r *http.Request, status int, data inter
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func GetJsonData(w http.ResponseWriter, r *http.Request, class string) (*models.Comment, *models.Post, *models.User, *models.CommentRating, *models.PostRating, error) {
+func GetJsonData(r *http.Request, class string) (*models.Comment, *models.Post, *models.User, *models.CommentRating, *models.PostRating, error) {
 	var c models.Comment
 	var p models.Post
 	var u models.User

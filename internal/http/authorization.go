@@ -7,7 +7,7 @@ import (
 
 func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		_, _, user, _, _, err := GetJsonData(w, r, "user")
+		_, _, user, _, _, err := GetJsonData(r, "user")
 		log.Println(user)
 		if err != nil {
 			jsonResponse(w, r, http.StatusBadRequest, err.Error())

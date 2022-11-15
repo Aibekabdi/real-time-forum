@@ -21,7 +21,6 @@ func TestSignup(t *testing.T) {
 				mock.ExpectPrepare("INSERT INTO User").
 					ExpectExec().
 					WithArgs("loli@gmail.com", "neo", "Aibek", "Abdikhalyk", "Qwerty123", "male", "19").WillReturnResult(sqlmock.NewResult(1, 1))
-				//email, nickname, first_name, last_name, password, gender, age
 			},
 			args: models.User{Email: "loli@gmail.com", Nickname: "neo", FirstName: "Aibek", LastName: "Abdikhalyk", Password: "Qwerty123", Gender: "male", Age: "19"},
 		},
