@@ -2,7 +2,6 @@ package http
 
 import (
 	"forum/internal/service"
-	"html/template"
 	"net/http"
 )
 
@@ -29,16 +28,6 @@ func (h *Handler) InitRoutes() *http.ServeMux {
 		}
 		mux.HandleFunc(route.Path, route.Handler)
 	}
-	fs := http.FileServer(http.Dir("./web/src"))
-	mux.Handle("/src/", http.StripPrefix("/src/", fs))
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		indexTmpl, err := template.ParseFiles("./web/index.html")
-		if err != nil {
-			jsonResponse(w, r, http.StatusInternalServerError, err.Error())
-		} else if err := indexTmpl.Execute(w, nil); err != nil {
-			jsonResponse(w, r, http.StatusInternalServerError, err.Error())
-		}
-	})
 	return mux
 }
 
