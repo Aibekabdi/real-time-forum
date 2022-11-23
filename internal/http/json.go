@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func jsonResponse(w http.ResponseWriter, r *http.Request, status int, data interface{}) {
+func jsonResponse(w http.ResponseWriter, _ *http.Request, status int, data interface{}) {
 	w.WriteHeader(status)
 	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
