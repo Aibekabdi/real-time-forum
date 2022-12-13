@@ -15,3 +15,7 @@ func (h *Handler) isSessionValid(f http.HandlerFunc) http.HandlerFunc {
 		}
 	}
 }
+
+func GenerateJWT() (string, error) {
+	return "", nil
+}

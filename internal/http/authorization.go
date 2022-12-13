@@ -26,7 +26,7 @@ func (h *Handler) signup(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) signin(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		//todo signin
+		//TODO signin
 		//if login succeded , redirect to main page
 	} else {
 		jsonResponse(w, r, http.StatusMethodNotAllowed, "method not allowed")
