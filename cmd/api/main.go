@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
+	"forum/internal/http"
+	"forum/internal/repository"
 	"forum/internal/server"
+	"forum/internal/service"
 	"forum/pkg/postgres"
 	"forum/pkg/utils"
 	"log"
@@ -41,16 +44,20 @@ func main() {
 			log.Println("db closed")
 		}
 	}()
-
+	// preparing handler <- -> service  <- -> repository
+	repo := repository.NewRepository(db)
+	service := service.NewService(repo)
+	handler := http.NewHandler(service)
+	// Running Server
 	srv := new(server.Server)
 	go func() {
-		if err := srv.Run(conf.Api.Port, nil); err != nil {
+		if err := srv.Run(conf.Api.Port, handler.InitRoutes()); err != nil {
 			log.Printf("error occured while running http server: %s", err.Error())
 			return
 		}
 	}()
 
-	// graceful shutdown
+	// Graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-sigChan
