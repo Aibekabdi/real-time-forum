@@ -1,9 +1,16 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"forum/internal/server"
 	"forum/pkg/postgres"
 	"forum/pkg/utils"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -26,6 +33,7 @@ func main() {
 		log.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	// Close connection postgres DB
 	defer func() {
 		if err = db.Close(); err != nil {
 			log.Fatal("can't close connection db, err:", err)
@@ -33,4 +41,26 @@ func main() {
 			log.Println("db closed")
 		}
 	}()
+
+	srv := new(server.Server)
+	go func() {
+		if err := srv.Run(conf.Api.Port, nil); err != nil {
+			log.Printf("error occured while running http server: %s", err.Error())
+			return
+		}
+	}()
+
+	// graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	sig := <-sigChan
+	fmt.Println()
+	log.Println("Received terminate, graceful shutdown", sig)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*3)
+	defer cancel()
+
+	if err = srv.Stop(ctx); err != nil {
+		log.Fatal(err)
+	}
 }
