@@ -14,10 +14,12 @@ func (h *Handler) signUp(c *gin.Context) {
 		h.errorResponse(c, http.StatusBadRequest, "invalid input body")
 		return
 	}
+
+	// Validating user input and adding to db
 	if err := h.service.User.Create(c.Request.Context(), input); err != nil {
 		h.errorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	//Todo validating user input and adding to db
+
 	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
 }
