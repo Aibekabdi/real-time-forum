@@ -1,10 +1,20 @@
 package service
 
-import "forum/internal/repository"
+import (
+	"context"
+	"forum/internal/models"
+	"forum/internal/repository"
+)
 
+type User interface {
+	Create(ctx context.Context, user models.User) error
+}
 type Service struct {
+	User
 }
 
 func NewService(repo *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		User: newUserService(repo.User),
+	}
 }

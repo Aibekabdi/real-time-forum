@@ -1,9 +1,21 @@
 package repository
 
-import "github.com/jmoiron/sqlx"
+import (
+	"context"
+	"forum/internal/models"
 
-type Repository struct{}
+	"github.com/jmoiron/sqlx"
+)
+
+type User interface {
+	Create(ctx context.Context, user models.User) error
+}
+type Repository struct {
+	User
+}
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{}
+	return &Repository{
+		User: newUserRepository(db),
+	}
 }
