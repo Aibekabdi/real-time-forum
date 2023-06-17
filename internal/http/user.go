@@ -23,3 +23,14 @@ func (h *Handler) signUp(c *gin.Context) {
 
 	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
 }
+
+func (h *Handler) signIn(c *gin.Context) {
+	var input models.User
+
+	if err := c.BindJSON(&input); err != nil {
+		h.errorResponse(c, http.StatusBadRequest, "invalid input body")
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{Status: "OK"}) // should be token
+}

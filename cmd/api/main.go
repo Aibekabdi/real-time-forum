@@ -21,6 +21,14 @@ import (
 func main() {
 	// Preparing environment variables
 	err := godotenv.Load()
+	secretKey := os.Getenv("JWT_SECRET_KEY")
+
+	// Check if the secret key is empty or not set
+	if secretKey == "" {
+		fmt.Println("JWT_SECRET_KEY environment variable is not set")
+		return
+	}
+
 	if err != nil {
 		log.Fatalf("err loading: %v", err)
 	}
@@ -46,7 +54,7 @@ func main() {
 	}()
 	// preparing handler <- -> service  <- -> repository
 	repo := repository.NewRepository(db)
-	service := service.NewService(repo)
+	service := service.NewService(repo, secretKey)
 	handler := http.NewHandler(service)
 	// Running Server
 	srv := new(server.Server)
@@ -70,4 +78,5 @@ func main() {
 	if err = srv.Stop(ctx); err != nil {
 		log.Fatal(err)
 	}
+
 }

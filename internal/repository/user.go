@@ -16,13 +16,13 @@ func newUserRepository(db *sqlx.DB) *UserRepository {
 }
 
 func (u *UserRepository) Create(ctx context.Context, user models.User) error {
-	query := `INSERT INTO user (nickname, gender, firstname, lastname, email, password) VALUES($1, $2, $3, $4, $5, $6)`
+	query := `INSERT INTO users (nickname, gender, age, firstname, lastname, email, password) VALUES($1, $2, $3, $4, $5, $6, $7)`
 	prep, err := u.db.PrepareContext(ctx, query)
 	if err != nil {
 		return err
 	}
 	defer prep.Close()
-	if _, err = prep.ExecContext(ctx, user.Nickname, user.Gender, user.FirstName, user.LastName, user.Email, user.Password); err != nil {
+	if _, err = prep.ExecContext(ctx, user.Nickname, user.Gender, user.Age, user.FirstName, user.LastName, user.Email, user.Password); err != nil {
 		return err
 	}
 	return nil

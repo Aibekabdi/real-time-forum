@@ -8,16 +8,21 @@ import (
 )
 
 type UserService struct {
-	userRepo repository.User
+	userRepo  repository.User
+	secretKey string
 }
 
-func newUserService(userRepo repository.User) *UserService {
-	return &UserService{userRepo: userRepo}
+func newUserService(userRepo repository.User, secretKey string) *UserService {
+	return &UserService{userRepo: userRepo, secretKey: secretKey}
 }
 
-func (u *UserService) Create(ctx context.Context, user models.User) error {
+func (s *UserService) Create(ctx context.Context, user models.User) error {
 	if err := utils.IsValidRegister(&user); err != nil {
 		return err
 	}
-	return u.userRepo.Create(ctx, user)
+	return s.userRepo.Create(ctx, user)
+}
+
+func (s *UserService) SignIn(ctx context.Context, nickname, password string) {
+	
 }

@@ -21,7 +21,6 @@ func NewPostgresDB(cfg utils.Database) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	// Ping the database to ensure a connection
 	if err := db.Ping(); err != nil {
 		return nil, err

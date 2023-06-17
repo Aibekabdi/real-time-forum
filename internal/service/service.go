@@ -13,8 +13,8 @@ type Service struct {
 	User
 }
 
-func NewService(repo *repository.Repository) *Service {
+func NewService(repo *repository.Repository, secretKey string) *Service {
 	return &Service{
-		User: newUserService(repo.User),
+		User: newUserService(repo.User, secretKey),
 	}
 }
