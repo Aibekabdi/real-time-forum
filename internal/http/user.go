@@ -16,7 +16,7 @@ func (h *Handler) signUp(c *gin.Context) {
 	}
 
 	// Validating user input and adding to db
-	if err := h.service.User.Create(c.Request.Context(), input); err != nil {
+	if err := h.service.Auth.Create(c.Request.Context(), input); err != nil {
 		h.errorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -32,7 +32,7 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	token, err := h.service.User.SignIn(c.Request.Context(), input)
+	token, err := h.service.Auth.SignIn(c.Request.Context(), input)
 	if err != nil {
 		h.errorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -40,5 +40,5 @@ func (h *Handler) signIn(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"token": token,
-	}) // should be token
+	})
 }

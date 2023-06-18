@@ -15,9 +15,9 @@ func newUserRepository(db *sqlx.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (u *UserRepository) Create(ctx context.Context, user models.User) error {
+func (r *UserRepository) Create(ctx context.Context, user models.User) error {
 	query := `INSERT INTO users (nickname, gender, age, firstname, lastname, email, password) VALUES($1, $2, $3, $4, $5, $6, $7)`
-	prep, err := u.db.PrepareContext(ctx, query)
+	prep, err := r.db.PrepareContext(ctx, query)
 	if err != nil {
 		return err
 	}
@@ -26,4 +26,25 @@ func (u *UserRepository) Create(ctx context.Context, user models.User) error {
 		return err
 	}
 	return nil
+}
+
+func (r *UserRepository) GetUser(ctx context.Context, loggindField string) (uint, string, error) {
+	query := `SELECT id, password FROM users WHERE nickname = $1 LIMIT 1;`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return 0, "", err
+	}
+
+	defer prep.Close()
+
+	var (
+		id       uint
+		password string
+	)
+
+	if err = prep.QueryRowContext(ctx, loggindField).Scan(&id, &password); err != nil {
+		return 0, "", err
+	}
+
+	return id, password, nil
 }

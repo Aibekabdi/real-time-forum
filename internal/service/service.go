@@ -6,16 +6,16 @@ import (
 	"forum/internal/repository"
 )
 
-type User interface {
+type Auth interface {
 	Create(ctx context.Context, user models.User) error
 	SignIn(ctx context.Context, user models.User) (string, error)
 }
 type Service struct {
-	User
+	Auth
 }
 
 func NewService(repo *repository.Repository, secretKey string) *Service {
 	return &Service{
-		User: newUserService(repo.User, secretKey),
+		Auth: newAuthService(repo.User, secretKey),
 	}
 }

@@ -1,8 +1,9 @@
 package models
 
-type Role int
-
-const (
-	GuestRole Role = iota
-	UserRole
-)
+var Roles = struct {
+	Guest uint
+	User  uint
+}{
+	Guest: 1,
+	User:  2,
+}

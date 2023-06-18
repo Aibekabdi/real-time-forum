@@ -9,6 +9,7 @@ import (
 
 type User interface {
 	Create(ctx context.Context, user models.User) error
+	GetUser(ctx context.Context, loggindField string) (uint, string, error)
 }
 type Repository struct {
 	User
