@@ -12,4 +12,10 @@ type UserToken struct {
 	Role   uint
 }
 
+type SigningInput struct {
+	UserName string `json:"username"`
+	Password string `json:"password"`
+	Role     uint   `json:"role"`
+}
+
 const UserCtx string = "models.UserCtx"

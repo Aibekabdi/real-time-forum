@@ -25,7 +25,7 @@ func (h *Handler) signUp(c *gin.Context) {
 }
 
 func (h *Handler) signIn(c *gin.Context) {
-	var input models.User
+	var input models.SigningInput
 
 	if err := c.BindJSON(&input); err != nil {
 		h.errorResponse(c, http.StatusBadRequest, "invalid input body")

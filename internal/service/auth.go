@@ -28,13 +28,26 @@ func (s *AuthService) Create(ctx context.Context, user models.User) error {
 	return s.userRepo.Create(ctx, user)
 }
 
-func (s *AuthService) SignIn(ctx context.Context, user models.User) (string, error) {
-	id, hash, err := s.userRepo.GetUser(ctx, user.Nickname)
+func (s *AuthService) SignIn(ctx context.Context, input models.SigningInput) (string, error) {
+	var (
+		id   uint
+		hash string
+		err  error
+	)
+	switch input.Role {
+	case models.Roles.Guest:
+		return "", fmt.Errorf("user service: sign in: %v", "invalid role")
+	case models.Roles.User:
+		id, hash, err = s.userRepo.GetUser(ctx, input.UserName)
+	default:
+		return "", fmt.Errorf("user service: sign in: %v", "invalid role")
+	}
+
 	if err != nil {
 		return "", fmt.Errorf("user service: sign in: %w", err)
 	}
 
-	if err = utils.CompareHashAndPassword(hash, user.Password); err != nil {
+	if err = utils.CompareHashAndPassword(hash, input.Password); err != nil {
 		return "", fmt.Errorf("user service: sign in: %w", err)
 	}
 

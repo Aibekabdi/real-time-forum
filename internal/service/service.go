@@ -8,7 +8,7 @@ import (
 
 type Auth interface {
 	Create(ctx context.Context, user models.User) error
-	SignIn(ctx context.Context, user models.User) (string, error)
+	SignIn(ctx context.Context, user models.SigningInput) (string, error)
 	ParseToken(accessToken string) (models.UserToken, error)
 }
 type Service struct {
