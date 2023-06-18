@@ -23,6 +23,6 @@ func (s *UserService) Create(ctx context.Context, user models.User) error {
 	return s.userRepo.Create(ctx, user)
 }
 
-func (s *UserService) SignIn(ctx context.Context, nickname, password string) {
-	
+func (s *UserService) SignIn(ctx context.Context, user models.User) (string, error) {
+	return "", nil
 }

@@ -8,6 +8,7 @@ import (
 
 type User interface {
 	Create(ctx context.Context, user models.User) error
+	SignIn(ctx context.Context, user models.User) (string, error)
 }
 type Service struct {
 	User

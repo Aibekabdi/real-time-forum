@@ -32,5 +32,13 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{Status: "OK"}) // should be token
+	token, err := h.service.User.SignIn(c.Request.Context(), input)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"token": token,
+	}) // should be token
 }
