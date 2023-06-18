@@ -9,6 +9,7 @@ import (
 type Auth interface {
 	Create(ctx context.Context, user models.User) error
 	SignIn(ctx context.Context, user models.User) (string, error)
+	ParseToken(accessToken string) (models.UserToken, error)
 }
 type Service struct {
 	Auth

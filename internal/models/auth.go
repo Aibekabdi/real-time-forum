@@ -11,3 +11,5 @@ type UserToken struct {
 	UserId uint
 	Role   uint
 }
+
+const UserCtx string = "models.UserCtx"
