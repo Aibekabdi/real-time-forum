@@ -2,7 +2,6 @@ package http
 
 import (
 	"forum/internal/service"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,12 +26,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentify)
 	{
-		// checking jwt tokens
-		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, map[string]interface{}{
-				"status": "OK",
-			})
-		}) // todo main forum place
+		post := api.Group("/post")
+		{
+			post.POST("/", h.createPost)
+		}
 	}
 	return router
 }

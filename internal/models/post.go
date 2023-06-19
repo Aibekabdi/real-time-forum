@@ -11,8 +11,6 @@ type Post struct {
 }
 
 type Tags struct {
-	ID    uint   `json:"id"`
-	Title string `json:"title"`
+	ID   uint   `json:"id"`
+	Text string `json:"text"`
 }
-
-
