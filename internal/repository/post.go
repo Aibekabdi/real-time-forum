@@ -48,3 +48,14 @@ func (r *PostRepository) Delete(ctx context.Context, postID, userID uint) error 
 	}
 	return nil
 }
+
+func (r *PostRepository) GetAll(ctx context.Context) ([]models.Post, error) {
+	// `
+	// 		SELECT p.id, p.title, p.text, u.id, u.nickname, t.id, t.name
+	// 		FROM posts p
+	// 		INNER JOIN users u ON p.user_id = u.id
+	// 		LEFT JOIN post_tags pt ON pt.post_id = p.id
+	// 		LEFT JOIN tags t ON pt.tag_id = t.id
+	// 	`
+	return nil, nil
+}
