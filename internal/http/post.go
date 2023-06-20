@@ -12,14 +12,19 @@ func (h *Handler) createPost(c *gin.Context) {
 		input models.Post
 		err   error
 	)
-	user, ok := c.Request.Context().Value(models.UserCtx).(models.UserToken)
+	userInterface, ok := c.Get(models.UserCtx)
 	if !ok {
 		h.errorResponse(c, http.StatusInternalServerError, "invalid user context")
 		return
 	}
+	user, ok := userInterface.(models.UserToken)
+	if !ok {
+		h.errorResponse(c, http.StatusInternalServerError, "invalid type of user")
+		return
+	}
 
 	if user.Role == models.Roles.Guest {
-		h.errorResponse(c, http.StatusUnauthorized, "invalid User")
+		h.errorResponse(c, http.StatusUnauthorized, "invalid User Role")
 		return
 	}
 
@@ -28,7 +33,7 @@ func (h *Handler) createPost(c *gin.Context) {
 		return
 	}
 	input.Author.Id = user.UserId
-	//TODO add to db and validate
+
 	postID, err := h.service.Post.Create(c.Request.Context(), input)
 	if err != nil {
 		h.errorResponse(c, http.StatusInternalServerError, err.Error())

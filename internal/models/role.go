@@ -4,6 +4,6 @@ var Roles = struct {
 	Guest uint
 	User  uint
 }{
-	Guest: 1,
-	User:  2,
+	Guest: 0,
+	User:  1,
 }

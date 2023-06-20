@@ -50,7 +50,13 @@ func (r *TagRepository) Create(ctx context.Context, tags []models.Tags, postID u
 }
 
 func (r *TagRepository) CreateTagPostConnection(ctx context.Context, postID, tagID uint) error {
-	query := "INSERT INTO post_tags (post_id, tag_id) VALUES ($1, $2);"
+	query := `
+	INSERT INTO post_tags (post_id, tag_id)
+	SELECT $1, $2
+	WHERE NOT EXISTS (
+		SELECT 1 FROM post_tags WHERE post_id = $1 AND tag_id = $2
+	);
+`
 
 	prep, err := r.db.PrepareContext(ctx, query)
 	if err != nil {
