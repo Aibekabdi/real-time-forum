@@ -3,6 +3,7 @@ package http
 import (
 	"forum/internal/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,15 +13,9 @@ func (h *Handler) createPost(c *gin.Context) {
 		input models.Post
 		err   error
 	)
-	userInterface, ok := c.Get(models.UserCtx)
-	if !ok {
-		h.errorResponse(c, http.StatusInternalServerError, "invalid user context")
-		return
-	}
-	user, ok := userInterface.(models.UserToken)
-	if !ok {
-		h.errorResponse(c, http.StatusInternalServerError, "invalid type of user")
-		return
+	user, err := getUserFromCtx(c)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 
 	if user.Role == models.Roles.Guest {
@@ -43,4 +38,22 @@ func (h *Handler) createPost(c *gin.Context) {
 	c.JSON(http.StatusCreated, map[string]interface{}{
 		"post_id": postID,
 	})
+}
+
+func (h *Handler) deletePost(c *gin.Context) {
+	user, err := getUserFromCtx(c)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	postID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		h.errorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+	if err := h.service.Post.Delete(c.Request.Context(), uint(postID), user.UserId); err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
 }

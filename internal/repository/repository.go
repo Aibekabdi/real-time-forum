@@ -14,11 +14,13 @@ type User interface {
 
 type Post interface {
 	Create(ctx context.Context, post models.Post) (uint, error)
+	Delete(ctx context.Context, postID, userID uint) error
 }
 
 type Tag interface {
 	Create(ctx context.Context, tag []models.Tags, postID uint) error
 	CreateTagPostConnection(ctx context.Context, tagID uint, postID uint) error
+	Delete(ctx context.Context, tagID uint) error
 }
 
 type Repository struct {

@@ -71,3 +71,16 @@ func (r *TagRepository) CreateTagPostConnection(ctx context.Context, postID, tag
 
 	return nil
 }
+
+func (r *TagRepository) Delete(ctx context.Context, tagID uint) error {
+	query := "DELETE FROM tags WHERE id = $1;"
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+	if _, err := prep.ExecContext(ctx, tagID); err != nil {
+		return err
+	}
+	return nil
+}

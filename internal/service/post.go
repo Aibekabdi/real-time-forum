@@ -33,6 +33,10 @@ func (s *PostService) Create(ctx context.Context, post models.Post) (uint, error
 	return postID, nil
 }
 
+func (s *PostService) Delete(ctx context.Context, postID, userID uint) error {
+	return s.postRepo.Delete(ctx, postID, userID)
+}
+
 func postValidation(post *models.Post) error {
 	if post.Title == "" || len(post.Title) > 60 {
 		return errors.New("invalid title")

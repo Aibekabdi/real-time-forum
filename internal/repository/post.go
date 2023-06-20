@@ -35,3 +35,16 @@ func (r *PostRepository) Create(ctx context.Context, post models.Post) (uint, er
 
 	return id, nil
 }
+
+func (r *PostRepository) Delete(ctx context.Context, postID, userID uint) error {
+	query := "DELETE FROM posts WHERE id = $1 and user_id = $2;"
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+	if _, err := prep.ExecContext(ctx, postID, userID); err != nil {
+		return err
+	}
+	return nil
+}
