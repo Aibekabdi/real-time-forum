@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE TABLE IF NOT EXISTS tags(
     id serial not null unique, 
-    text varchar(255) not null unique
+    name varchar(255) not null unique
 );
 
 CREATE TABLE IF NOT EXISTS posts(

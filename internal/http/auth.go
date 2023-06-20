@@ -21,7 +21,7 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
+	c.JSON(http.StatusCreated, statusResponse{Status: "Created"})
 }
 
 func (h *Handler) signIn(c *gin.Context) {

@@ -2,7 +2,6 @@ package http
 
 import (
 	"forum/internal/models"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,15 +17,25 @@ func (h *Handler) createPost(c *gin.Context) {
 		h.errorResponse(c, http.StatusInternalServerError, "invalid user context")
 		return
 	}
-	log.Println(user)
+
+	if user.Role == models.Roles.Guest {
+		h.errorResponse(c, http.StatusUnauthorized, "invalid User")
+		return
+	}
 
 	if err = c.BindJSON(&input); err != nil {
 		h.errorResponse(c, http.StatusBadRequest, "invalid json body")
 		return
 	}
+	input.Author.Id = user.UserId
 	//TODO add to db and validate
+	postID, err := h.service.Post.Create(c.Request.Context(), input)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(http.StatusCreated, map[string]interface{}{
-		"post_id": 0,
+		"post_id": postID,
 	})
 }

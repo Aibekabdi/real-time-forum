@@ -17,7 +17,7 @@ type Post interface {
 }
 
 type Tag interface {
-	Create(ctx context.Context, tag models.Tags, postID uint) error
+	Create(ctx context.Context, tag []models.Tags, postID uint) error
 	CreateTagPostConnection(ctx context.Context, tagID uint, postID uint) error
 }
 

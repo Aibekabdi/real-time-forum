@@ -12,5 +12,5 @@ type Post struct {
 
 type Tags struct {
 	ID   uint   `json:"id"`
-	Text string `json:"text"`
+	Name string `json:"name"`
 }
