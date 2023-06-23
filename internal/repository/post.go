@@ -62,7 +62,7 @@ func (r *PostRepository) GetALL(ctx context.Context) ([]models.Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := prep.QueryContext(ctx, query)
+	rows, err := prep.QueryContext(ctx)
 	if err != nil {
 		return nil, err
 	}
