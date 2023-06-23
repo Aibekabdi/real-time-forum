@@ -34,3 +34,7 @@ func (s *PostService) Create(ctx context.Context, post models.Post) (uint, error
 func (s *PostService) Delete(ctx context.Context, postID, userID uint) error {
 	return s.postRepo.Delete(ctx, postID, userID)
 }
+
+func (s *PostService) GetALL(ctx context.Context) ([]models.Post, error) {
+	return s.postRepo.GetALL(ctx)
+}

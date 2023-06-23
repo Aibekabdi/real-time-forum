@@ -26,11 +26,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentify)
 	{
-		post := api.Group("/post")
+		posts := api.Group("/posts")
 		{
-			post.POST("/", h.createPost)
-			post.DELETE("/:id", h.deletePost)
+			posts.POST("/", h.createPost)
+			posts.DELETE("/:id", h.deletePost)
 		}
+	}
+
+	allPosts := router.Group("/posts")
+	{
+		allPosts.GET("/", h.getALLPosts)
 	}
 	return router
 }

@@ -15,6 +15,7 @@ type User interface {
 type Post interface {
 	Create(ctx context.Context, post models.Post) (uint, error)
 	Delete(ctx context.Context, postID, userID uint) error
+	GetALL(ctx context.Context) ([]models.Post, error)
 }
 
 type Tag interface {

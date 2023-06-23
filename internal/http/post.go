@@ -57,3 +57,17 @@ func (h *Handler) deletePost(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
 }
+
+func (h *Handler) getALLPosts(c *gin.Context) {
+	var (
+		posts []models.Post
+		err   error
+	)
+	posts, err = h.service.Post.GetALL(c.Request.Context())
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, posts)
+}
