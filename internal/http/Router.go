@@ -28,8 +28,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		posts := api.Group("/posts")
 		{
+			// not identified 
 			posts.GET("/", h.getALLPosts)
 			{
+				// posts which should be identified
 				posts.Use(h.userIdentify)
 				posts.POST("/", h.createPost)
 				posts.DELETE("/:id", h.deletePost)

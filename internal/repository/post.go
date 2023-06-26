@@ -30,7 +30,7 @@ func (r *PostRepository) Create(ctx context.Context, post models.Post) (uint, er
 
 	defer prep.Close()
 
-	if err := prep.QueryRowContext(ctx, post.Author.Id, post.Title, post.Text).Scan(&id); err != nil {
+	if err := prep.QueryRowContext(ctx, post.Author.ID, post.Title, post.Text).Scan(&id); err != nil {
 		return 0, err
 	}
 
@@ -56,7 +56,7 @@ func (r *PostRepository) GetALL(ctx context.Context) ([]models.Post, error) {
 			FROM posts p
 			INNER JOIN users u ON p.user_id = u.id
 			LEFT JOIN post_tags pt ON pt.post_id = p.id
-			LEFT JOIN tags t ON pt.tag_id = t.id
+			LEFT JOIN tags t ON pt.tag_id = t.id;
 		`
 	prep, err := r.db.PrepareContext(ctx, query)
 	if err != nil {
@@ -84,7 +84,7 @@ func (r *PostRepository) GetALL(ctx context.Context) ([]models.Post, error) {
 			posts[postID] = &models.Post{
 				ID:     postID,
 				Title:  title,
-				Author: models.User{Id: authorID, Nickname: author},
+				Author: models.User{ID: authorID, Nickname: author},
 			}
 		}
 		if tagID.Valid && tagName.Valid {
@@ -99,4 +99,23 @@ func (r *PostRepository) GetALL(ctx context.Context) ([]models.Post, error) {
 		result = append(result, *post)
 	}
 	return result, nil
+}
+
+func (r *PostRepository) GetByID(ctx context.Context, postID uint) (models.Post, error) {
+	query := `
+		SELECT p.id, p.title, p.text, u.id, u.nickname
+		FROM posts p
+		INNER JOIN users u ON p.user_id = u.id
+		WHERE p.id = $1;
+	`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return models.Post{}, err
+	}
+	defer prep.Close()
+	post := models.Post{}
+	if err := prep.QueryRowContext(ctx, postID).Scan(&post.ID, &post.Title, &post.Text, &post.Author.ID, &post.Author.Nickname); err != nil {
+		return models.Post{}, err
+	}
+	return post, nil
 }

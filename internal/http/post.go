@@ -27,7 +27,7 @@ func (h *Handler) createPost(c *gin.Context) {
 		h.errorResponse(c, http.StatusBadRequest, "invalid json body")
 		return
 	}
-	input.Author.Id = user.UserId
+	input.Author.ID = user.UserId
 
 	postID, err := h.service.Post.Create(c.Request.Context(), input)
 	if err != nil {

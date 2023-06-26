@@ -1,7 +1,7 @@
 package models
 
 type Comments struct {
-	Id     uint   `json:"id"`
+	ID     uint   `json:"id"`
 	Author User   `json:"author"`
 	PostId uint   `json:"postid"`
 	Title  string `json:"title"`

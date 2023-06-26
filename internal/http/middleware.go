@@ -32,4 +32,5 @@ func (h *Handler) userIdentify(c *gin.Context) {
 		return
 	}
 	c.Set(models.UserCtx, user)
+	c.Next()
 }

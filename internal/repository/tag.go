@@ -84,3 +84,7 @@ func (r *TagRepository) Delete(ctx context.Context, tagID uint) error {
 	}
 	return nil
 }
+
+func (r *TagRepository) GetByPostID(ctx context.Context, postID uint) ([]models.Tags, error) {
+	return nil, nil
+}
