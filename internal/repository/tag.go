@@ -86,5 +86,41 @@ func (r *TagRepository) Delete(ctx context.Context, tagID uint) error {
 }
 
 func (r *TagRepository) GetByPostID(ctx context.Context, postID uint) ([]models.Tags, error) {
-	return nil, nil
+	query := `
+		SELECT t.id, t.name
+		FROM tags t
+		INNER JOIN post_tags pt ON pt.tag_id = t.id
+		WHERE pt.post_id = $1;
+	`
+
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer prep.Close()
+
+	rows, err := prep.QueryContext(ctx, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tags []models.Tags
+	for rows.Next() {
+		var (
+			tagID   uint
+			tagName string
+		)
+		err := rows.Scan(&tagID, &tagName)
+		if err != nil {
+			return nil, err
+		}
+		tags = append(tags, models.Tags{ID: tagID, Name: tagName})
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
 }

@@ -103,7 +103,7 @@ func (r *PostRepository) GetALL(ctx context.Context) ([]models.Post, error) {
 
 func (r *PostRepository) GetByID(ctx context.Context, postID uint) (models.Post, error) {
 	query := `
-		SELECT p.id, p.title, p.text, u.id, u.nickname
+		SELECT p.id, p.title, p.text, u.id, u.nickname, t.id, t.name
 		FROM posts p
 		INNER JOIN users u ON p.user_id = u.id
 		WHERE p.id = $1;

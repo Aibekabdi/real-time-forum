@@ -24,18 +24,27 @@ type Tag interface {
 	Create(ctx context.Context, tag []models.Tags, postID uint) error
 	CreateTagPostConnection(ctx context.Context, tagID uint, postID uint) error
 	Delete(ctx context.Context, tagID uint) error
+	GetByPostID(ctx context.Context, postID uint) ([]models.Tags, error)
+}
+
+type Comment interface {
+	Create(ctx context.Context, comment models.Comments) error
+	Delete(ctx context.Context, commentID uint) error
+	GetByPostID(ctx context.Context, postID uint) ([]models.Comments, error)
 }
 
 type Repository struct {
 	User
 	Post
 	Tag
+	Comment
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		User: newUserRepository(db),
-		Post: newPostRepository(db),
-		Tag:  newTagRepository(db),
+		User:    newUserRepository(db),
+		Post:    newPostRepository(db),
+		Tag:     newTagRepository(db),
+		Comment: newCommentRepository(db),
 	}
 }
