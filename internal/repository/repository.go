@@ -16,7 +16,7 @@ type Post interface {
 	Create(ctx context.Context, post models.Post) (uint, error)
 	Delete(ctx context.Context, postID, userID uint) error
 	GetALL(ctx context.Context) ([]models.Post, error)
-	//GetByID
+	GetByID(ctx context.Context, postID uint) (models.Post, error)
 	//GetALLByTags
 }
 
