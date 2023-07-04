@@ -19,14 +19,21 @@ type Post interface {
 	GetByID(ctx context.Context, postID uint) (models.Post, error)
 }
 
+type Comment interface {
+	Create(ctx context.Context, comment models.Comments) (uint, error)
+	Delete(ctx context.Context, commentID, userID uint) error
+}
+
 type Service struct {
 	Auth
 	Post
+	Comment
 }
 
 func NewService(repo *repository.Repository, secretKey string) *Service {
 	return &Service{
-		Auth: newAuthService(repo.User, secretKey),
-		Post: newPostService(repo.Post, repo.Tag, repo.Comment),
+		Auth:    newAuthService(repo.User, secretKey),
+		Post:    newPostService(repo.Post, repo.Tag, repo.Comment),
+		Comment: newCommentService(repo.Comment),
 	}
 }
