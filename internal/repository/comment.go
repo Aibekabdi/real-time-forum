@@ -15,8 +15,39 @@ func newCommentRepository(db *sqlx.DB) *CommentRepository {
 	return &CommentRepository{db: db}
 }
 
-func (r *CommentRepository) Create(ctx context.Context, comment models.Comments) error
-func (r *CommentRepository) Delete(ctx context.Context, commentID uint) error
+func (r *CommentRepository) Create(ctx context.Context, comment models.Comments) (uint, error) {
+	var (
+		id  uint
+		err error
+	)
+	query := "INSERT INTO comments (user_id, post_id, text) VALUES ($1, $2, $3) RETURNING id;"
+
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return 0, err
+	}
+	defer prep.Close()
+
+	if err := prep.QueryRowContext(ctx, comment.Author.ID, comment.PostId, comment.Text).Scan(&id); err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func (r *CommentRepository) Delete(ctx context.Context, commentID, userID uint) error {
+	query := "DELETE FROM comments WHERE id = $1 and user_id ;"
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+
+	if _, err := prep.ExecContext(ctx, commentID, userID); err != nil {
+		return err
+	}
+	return nil
+}
 
 func (r *CommentRepository) GetByPostID(ctx context.Context, postID uint) ([]models.Comments, error) {
 	query := `
@@ -42,7 +73,7 @@ func (r *CommentRepository) GetByPostID(ctx context.Context, postID uint) ([]mod
 	for rows.Next() {
 		comment := models.Comments{}
 
-		if err := rows.Scan(&comment.ID, &comment.Title, &comment.Text, &comment.Author.ID, &comment.Author.Nickname); err != nil {
+		if err := rows.Scan(&comment.ID, &comment.Text, &comment.Author.ID, &comment.Author.Nickname); err != nil {
 			return nil, err
 		}
 

@@ -28,8 +28,8 @@ type Tag interface {
 }
 
 type Comment interface {
-	Create(ctx context.Context, comment models.Comments) error
-	Delete(ctx context.Context, commentID uint) error
+	Create(ctx context.Context, comment models.Comments) (uint, error)
+	Delete(ctx context.Context, commentID, userID uint) error
 	GetByPostID(ctx context.Context, postID uint) ([]models.Comments, error)
 }
 
