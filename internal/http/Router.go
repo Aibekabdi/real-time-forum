@@ -29,6 +29,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		posts := api.Group("/posts")
 		{
 			posts.GET("/", h.getALLPosts)
+			posts.GET("/:id", h.getPostByID)
 			{
 				posts.Use(h.userIdentify)
 				posts.POST("/", h.createPost)

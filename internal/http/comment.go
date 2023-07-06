@@ -31,7 +31,7 @@ func (h *Handler) createComment(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, map[string]interface{}{
-		"post_id": commentID,
+		"comment_id": commentID,
 	})
 }
 

@@ -71,3 +71,17 @@ func (h *Handler) getALLPosts(c *gin.Context) {
 
 	c.JSON(http.StatusOK, posts)
 }
+
+func (h *Handler) getPostByID(c *gin.Context) {
+	postID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		h.errorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+	post, err := h.service.GetByID(c.Request.Context(), uint(postID))
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, post)
+}
