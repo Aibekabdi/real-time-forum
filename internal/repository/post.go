@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"forum/internal/models"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -120,42 +121,76 @@ func (r *PostRepository) GetByID(ctx context.Context, postID uint) (models.Post,
 	return post, nil
 }
 
-func (r *PostRepository) UpsertPostVote(ctx context.Context, postID, userID uint, likeType int) (uint, error) {
-	query := `
-		INSERT INTO posts_likes (post_id, user_id, type)
-		VALUES ($1, $2, $3)
-		ON CONFLICT (post_id, user_id)
-		DO UPDATE SET type = $3
-		RETURNING post_id;
-	`
-	prep, err := r.db.PrepareContext(ctx, query)
+func (r *PostRepository) InsertorDelete(ctx context.Context, postID, userID uint, likeType int) error {
+	var (
+		query string
+	)
+	exists, err := r.checkPostLikeExists(ctx, postID, userID)
 	if err != nil {
-		return 0, err
+		return err
 	}
-	defer prep.Close()
-	var returnedPostID uint
-	if err := prep.QueryRowContext(ctx, postID, userID, likeType).Scan(&returnedPostID); err != nil {
-		return 0, err
+	if exists {
+		currentType, err := r.getPostLikeType(ctx, postID, userID)
+		if err != nil {
+			return nil
+		}
+		if currentType != likeType {
+			query = `UPDATE posts_likes SET type = $1 WHERE post_id = $2 AND user_id = $3`
+			prep, err := r.db.PrepareContext(ctx, query)
+			if err != nil {
+				return err
+			}
+			defer prep.Close()
+			if _, err := prep.ExecContext(ctx, likeType, postID, userID); err != nil {
+				return err
+			}
+			log.Printf("user : %v's vote updated in post:%v\n", userID, postID)
+			return nil
+		} else {
+			query = `DELETE FROM posts_likes WHERE post_id = $1 AND user_id = $2`
+			prep, err := r.db.PrepareContext(ctx, query)
+			if err != nil {
+				return err
+			}
+			defer prep.Close()
+			if _, err := prep.ExecContext(ctx, postID, userID); err != nil {
+				return err
+			}
+			log.Printf("user : %v's vote deleted in post:%v\n", userID, postID)
+			return nil
+		}
+	} else {
+		query = `INSERT INTO post_likes (post_id, user_id, type) VALUES ($1, $2, $3)`
+		prep, err := r.db.PrepareContext(ctx, query)
+		if err != nil {
+			return err
+		}
+		defer prep.Close()
+		if _, err := prep.ExecContext(ctx, postID, userID, likeType); err != nil {
+			return err
+		}
 	}
-	return returnedPostID, nil
+	return nil
 }
 
-func (r *PostRepository) DeletePostVote(ctx context.Context, postID, userID uint) error {
-	query := `
-		DELETE FROM posts_likes
-		WHERE post_id = $1 AND user_id = $2;
-	`
-	prep, err := r.db.PrepareContext(ctx, query)
+func (r *PostRepository) checkPostLikeExists(ctx context.Context, postID, userID uint) (bool, error) {
+	var exists bool
+	err := r.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM posts_likes WHERE post_id = $1 AND user_id = $2)",
+		postID, userID).Scan(&exists)
 	if err != nil {
-		return err
+		return false, err
 	}
-	defer prep.Close()
+	return exists, nil
+}
 
-	if _, err := prep.ExecContext(ctx, postID, userID); err != nil {
-		return err
+func (r *PostRepository) getPostLikeType(ctx context.Context, postID, userID uint) (int, error) {
+	var likeType int
+	err := r.db.QueryRowContext(ctx, "SELECT type FROM posts_likes WHERE post_id = $1 AND user_id = $2",
+		postID, userID).Scan(&likeType)
+	if err != nil {
+		return 0, err
 	}
-
-	return nil
+	return likeType, nil
 }
 
 // not finshed yet

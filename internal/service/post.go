@@ -57,3 +57,10 @@ func (s *PostService) GetByID(ctx context.Context, postID uint) (models.Post, er
 	post.Comments = comments
 	return post, nil
 }
+
+// func (s *PostService) UpsertPostVote(ctx context.Context, postID, userID uint, likeType int) (uint, error) {
+// 	if likeType != -1 && likeType != 1 {
+// 		return 0, errors.New("invalid type of vote")
+// 	}
+// 	return s.postRepo.UpsertPostVote(ctx, postID, userID, likeType)
+// }
