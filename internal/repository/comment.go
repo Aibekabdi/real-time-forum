@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"forum/internal/models"
+	"log"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -82,4 +83,76 @@ func (r *CommentRepository) GetByPostID(ctx context.Context, postID uint) ([]mod
 	}
 
 	return comments, nil
+}
+
+func (r *CommentRepository) InsertorDelete(ctx context.Context, commentID, userID uint, likeType int) error {
+	var (
+		query string
+	)
+	exists, err := r.checkPostLikeExists(ctx, commentID, userID)
+	if err != nil {
+		return err
+	}
+	if exists {
+		currentType, err := r.getPostLikeType(ctx, commentID, userID)
+		if err != nil {
+			return nil
+		}
+		if currentType != likeType {
+			query = `UPDATE comments_likes SET type = $1 WHERE comment_id = $2 AND user_id = $3`
+			prep, err := r.db.PrepareContext(ctx, query)
+			if err != nil {
+				return err
+			}
+			defer prep.Close()
+			if _, err := prep.ExecContext(ctx, likeType, commentID, userID); err != nil {
+				return err
+			}
+			log.Printf("user : %v's vote updated in post:%v\n", userID, commentID)
+			return nil
+		} else {
+			query = `DELETE FROM comments_likes WHERE comment_id = $1 AND user_id = $2`
+			prep, err := r.db.PrepareContext(ctx, query)
+			if err != nil {
+				return err
+			}
+			defer prep.Close()
+			if _, err := prep.ExecContext(ctx, commentID, userID); err != nil {
+				return err
+			}
+			log.Printf("user : %v's vote deleted in post:%v\n", userID, commentID)
+			return nil
+		}
+	} else {
+		query = `INSERT INTO post_likes (comment_id, user_id, type) VALUES ($1, $2, $3)`
+		prep, err := r.db.PrepareContext(ctx, query)
+		if err != nil {
+			return err
+		}
+		defer prep.Close()
+		if _, err := prep.ExecContext(ctx, commentID, userID, likeType); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (r *CommentRepository) checkPostLikeExists(ctx context.Context, commentID, userID uint) (bool, error) {
+	var exists bool
+	err := r.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM comments_likes WHERE comment_id = $1 AND user_id = $2)",
+		commentID, userID).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (r *CommentRepository) getPostLikeType(ctx context.Context, commentID, userID uint) (int, error) {
+	var likeType int
+	err := r.db.QueryRowContext(ctx, "SELECT type FROM comments_likes WHERE comment_id = $1 AND user_id = $2",
+		commentID, userID).Scan(&likeType)
+	if err != nil {
+		return 0, err
+	}
+	return likeType, nil
 }

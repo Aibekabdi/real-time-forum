@@ -32,6 +32,7 @@ type Comment interface {
 	Create(ctx context.Context, comment models.Comments) (uint, error)
 	Delete(ctx context.Context, commentID, userID uint) error
 	GetByPostID(ctx context.Context, postID uint) ([]models.Comments, error)
+	InsertorDelete(ctx context.Context, commentID, userID uint, likeType int) error
 }
 
 type Repository struct {

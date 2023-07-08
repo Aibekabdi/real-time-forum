@@ -31,9 +31,9 @@ func (s *CommentService) Delete(ctx context.Context, commentID, userID uint) err
 	return s.commentRepo.Delete(ctx, commentID, userID)
 }
 
-// func (s *CommentService) UpsertCommentVote(ctx context.Context, commentID, userID uint, likeType int) (uint, error) {
-// 	if likeType != -1 && likeType != 1 {
-// 		return 0, errors.New("invalid type of vote")
-// 	}
-// 	return s.commentRepo.UpsertCommentVote(ctx, commentID, userID, likeType)
-// }
+func (s *CommentService) InsertorDelete(ctx context.Context, commentID, userID uint, likeType int) error {
+	if likeType != -1 && likeType != 1 {
+		return errors.New("invalid type of vote")
+	}
+	return s.commentRepo.InsertorDelete(ctx, commentID, userID, likeType)
+}
