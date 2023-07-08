@@ -39,19 +39,19 @@ CREATE TABLE IF NOT EXISTS post_tags(
 );
 
 CREATE TABLE posts_likes (
-    id serial not null unique, 
     post_id integer not null,
     user_id integer not null,
     type integer not null,
-    foreign key(post_id) references posts(id) on delete cascade,
-    foreign key(user_id) references users(id) on delete cascade
+    primary key (post_id, user_id),
+    foreign key (post_id) references posts(id) on delete cascade,
+    foreign key (user_id) references users(id) on delete cascade
 );
 
 CREATE TABLE comments_likes (
-    id serial not null unique, 
     comment_id integer not null,
     user_id integer not null,
     type integer not null,
+    primary key (comment_id, user_id),
     foreign key(comment_id) references comments(id) on delete cascade,
     foreign key(user_id) references users(id) on delete cascade
 );

@@ -119,3 +119,60 @@ func (r *PostRepository) GetByID(ctx context.Context, postID uint) (models.Post,
 	}
 	return post, nil
 }
+
+func (r *PostRepository) UpsertPostVote(ctx context.Context, postID, userID uint, likeType int) (uint, error) {
+	query := `
+		INSERT INTO posts_likes (post_id, user_id, type)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (post_id, user_id)
+		DO UPDATE SET type = $3
+		RETURNING post_id;
+	`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return 0, err
+	}
+	defer prep.Close()
+	var returnedPostID uint
+	if err := prep.QueryRowContext(ctx, postID, userID, likeType).Scan(&returnedPostID); err != nil {
+		return 0, err
+	}
+	return returnedPostID, nil
+}
+
+func (r *PostRepository) DeletePostVote(ctx context.Context, postID, userID uint) error {
+	query := `
+		DELETE FROM posts_likes
+		WHERE post_id = $1 AND user_id = $2;
+	`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+
+	if _, err := prep.ExecContext(ctx, postID, userID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// not finshed yet
+func GetLikesAndDislikes(db *sql.DB, postID int) (int, int, error) {
+	query := `
+		SELECT 
+			SUM(CASE WHEN type = -1 THEN -1 WHEN type = 1 THEN 1 ELSE 0 END) AS dislikes,
+			SUM(CASE WHEN type = 1 THEN 1 ELSE 0 END) AS likes
+		FROM posts_likes
+		WHERE post_id = $1;
+	`
+
+	var dislikes, likes int
+	err := db.QueryRow(query, postID).Scan(&dislikes, &likes)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return likes, dislikes, nil
+}

@@ -83,3 +83,43 @@ func (r *CommentRepository) GetByPostID(ctx context.Context, postID uint) ([]mod
 
 	return comments, nil
 }
+
+func (r *CommentRepository) UpsertCommentVote(ctx context.Context, commentID, userID uint, likeType int) (uint, error) {
+	query := `
+		INSERT INTO comments_likes (comment_id, user_id, type)
+		VALUES ($1, $2, $3)
+		ON CONFLICT (comment_id, user_id)
+		DO UPDATE SET type = $3
+		RETURNING comment_id;
+	`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return 0, err
+	}
+	defer prep.Close()
+
+	var returnedCommentID uint
+
+	if err := prep.QueryRowContext(ctx, commentID, userID, likeType).Scan(&returnedCommentID); err != nil {
+		return 0, err
+	}
+	return returnedCommentID, nil
+}
+
+func (r *CommentRepository) DeleteCommentVote(ctx context.Context, commentID, userID uint) error {
+	query := `
+		DELETE FROM comments_likes
+		WHERE comment_id = $1 AND user_id = $2;
+	`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+
+	if _, err := prep.ExecContext(ctx, commentID, userID); err != nil {
+		return err
+	}
+
+	return nil
+}
