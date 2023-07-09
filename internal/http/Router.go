@@ -49,6 +49,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			profile.Use(h.userIdentify)
 			profile.GET("/posts", h.getPostsByUserID)
+			profile.GET("/", nil)
 		}
 	}
 	return router
