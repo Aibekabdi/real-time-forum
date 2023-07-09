@@ -59,9 +59,9 @@ func (s *PostService) GetByID(ctx context.Context, postID uint) (models.Post, er
 	return post, nil
 }
 
-func (s *PostService) InsertorDelete(ctx context.Context, postID, userID uint, likeType int) error {
-	if likeType != -1 && likeType != 1 {
+func (s *PostService) InsertorDelete(ctx context.Context, input models.PostVote) error {
+	if input.LikeType != -1 && input.LikeType != 1 {
 		return errors.New("invalid type of vote")
 	}
-	return s.postRepo.InsertorDelete(ctx, postID, userID, likeType)
+	return s.postRepo.InsertorDelete(ctx, input)
 }

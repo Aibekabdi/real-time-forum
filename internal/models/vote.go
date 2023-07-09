@@ -1,28 +1,20 @@
 package models
 
 type Vote struct {
-	Likes    uint64 `json:"likes"`
-	Dislikes uint64 `json:"dislikes"`
+	Likes    uint `json:"likes"`
+	Dislikes uint `json:"dislikes"`
 }
 
 type PostVote struct {
-	ID       int
-	PostID   int
-	UserID   int
-	LikeType int
+	ID       uint `json:"id"`
+	PostID   uint `json:"postID"`
+	UserID   uint `json:"userID"`
+	LikeType int  `json:"likeType"`
 }
 
 type CommentVote struct {
-	ID        int
-	CommentID int
-	UserID    int
-	LikeType  int
-}
-
-var LikeTypes = struct {
-	Like    int
-	Dislike int
-}{
-	Like:    1,
-	Dislike: 2,
+	ID        uint `json:"id"`
+	CommentID uint `json:"commentID"`
+	UserID    uint `json:"userID"`
+	LikeType  int  `json:"likeType"`
 }

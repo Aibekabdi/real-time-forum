@@ -31,9 +31,9 @@ func (s *CommentService) Delete(ctx context.Context, commentID, userID uint) err
 	return s.commentRepo.Delete(ctx, commentID, userID)
 }
 
-func (s *CommentService) InsertorDelete(ctx context.Context, commentID, userID uint, likeType int) error {
-	if likeType != -1 && likeType != 1 {
+func (s *CommentService) InsertorDelete(ctx context.Context, input models.CommentVote) error {
+	if input.LikeType != -1 && input.LikeType != 1 {
 		return errors.New("invalid type of vote")
 	}
-	return s.commentRepo.InsertorDelete(ctx, commentID, userID, likeType)
+	return s.commentRepo.InsertorDelete(ctx, input)
 }

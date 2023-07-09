@@ -17,13 +17,13 @@ type Post interface {
 	Delete(ctx context.Context, postID, userID uint) error
 	GetALL(ctx context.Context) ([]models.Post, error)
 	GetByID(ctx context.Context, postID uint) (models.Post, error)
-	InsertorDelete(ctx context.Context, commentID, userID uint, likeType int) error
+	InsertorDelete(ctx context.Context, input models.PostVote) error
 }
 
 type Comment interface {
 	Create(ctx context.Context, comment models.Comments) (uint, error)
 	Delete(ctx context.Context, commentID, userID uint) error
-	InsertorDelete(ctx context.Context, commentID, userID uint, likeType int) error
+	InsertorDelete(ctx context.Context, input models.CommentVote) error
 }
 
 type Service struct {

@@ -34,6 +34,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				posts.Use(h.userIdentify)
 				posts.POST("/", h.createPost)
 				posts.DELETE("/:id", h.deletePost)
+				posts.POST("/like/:id", h.likePostByID)
 			}
 		}
 		comments := api.Group("/comments")
@@ -41,6 +42,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			comments.Use(h.userIdentify)
 			comments.POST("/", h.createComment)
 			comments.DELETE("/:id", h.deleteComment)
+			comments.POST("/like/:id", h.likeCommentByID)
 		}
 	}
 	return router

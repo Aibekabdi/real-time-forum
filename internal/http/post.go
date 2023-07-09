@@ -16,6 +16,7 @@ func (h *Handler) createPost(c *gin.Context) {
 	user, err := getUserFromCtx(c)
 	if err != nil {
 		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	if user.Role == models.Roles.Guest {
@@ -84,4 +85,35 @@ func (h *Handler) getPostByID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, post)
+}
+
+func (h *Handler) likePostByID(c *gin.Context) {
+	postID, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		h.errorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
+	user, err := getUserFromCtx(c)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if user.Role == models.Roles.Guest {
+		h.errorResponse(c, http.StatusUnauthorized, "invalid User Role")
+		return
+	}
+	var input models.PostVote
+	if err := c.BindJSON(&input); err != nil {
+		h.errorResponse(c, http.StatusBadRequest, "invalid json body")
+		return
+	}
+	input.PostID = uint(postID)
+	input.UserID = user.UserId
+
+	if err := h.service.Post.InsertorDelete(c.Request.Context(), input); err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
 }

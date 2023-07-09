@@ -113,38 +113,43 @@ func (r *PostRepository) GetByID(ctx context.Context, postID uint) (models.Post,
 	if err != nil {
 		return models.Post{}, err
 	}
-	defer prep.Close()
 	post := models.Post{}
 	if err := prep.QueryRowContext(ctx, postID).Scan(&post.ID, &post.Title, &post.Text, &post.Author.ID, &post.Author.Nickname); err != nil {
 		return models.Post{}, err
 	}
+	prep.Close()
+	votes, err := r.getLikesAndDislikes(postID)
+	if err != nil {
+		return models.Post{}, err
+	}
+	post.Vote = votes
 	return post, nil
 }
 
-func (r *PostRepository) InsertorDelete(ctx context.Context, postID, userID uint, likeType int) error {
+func (r *PostRepository) InsertorDelete(ctx context.Context, input models.PostVote) error {
 	var (
 		query string
 	)
-	exists, err := r.checkPostLikeExists(ctx, postID, userID)
+	exists, err := r.checkPostLikeExists(ctx, input.PostID, input.UserID)
 	if err != nil {
 		return err
 	}
 	if exists {
-		currentType, err := r.getPostLikeType(ctx, postID, userID)
+		currentType, err := r.getPostLikeType(ctx, input.PostID, input.UserID)
 		if err != nil {
 			return nil
 		}
-		if currentType != likeType {
+		if currentType != input.LikeType {
 			query = `UPDATE posts_likes SET type = $1 WHERE post_id = $2 AND user_id = $3`
 			prep, err := r.db.PrepareContext(ctx, query)
 			if err != nil {
 				return err
 			}
 			defer prep.Close()
-			if _, err := prep.ExecContext(ctx, likeType, postID, userID); err != nil {
+			if _, err := prep.ExecContext(ctx, input.LikeType, input.PostID, input.UserID); err != nil {
 				return err
 			}
-			log.Printf("user : %v's vote updated in post:%v\n", userID, postID)
+			log.Printf("user : %v's vote updated in post:%v\n", input.UserID, input.PostID)
 			return nil
 		} else {
 			query = `DELETE FROM posts_likes WHERE post_id = $1 AND user_id = $2`
@@ -153,20 +158,20 @@ func (r *PostRepository) InsertorDelete(ctx context.Context, postID, userID uint
 				return err
 			}
 			defer prep.Close()
-			if _, err := prep.ExecContext(ctx, postID, userID); err != nil {
+			if _, err := prep.ExecContext(ctx, input.PostID, input.UserID); err != nil {
 				return err
 			}
-			log.Printf("user : %v's vote deleted in post:%v\n", userID, postID)
+			log.Printf("user : %v's vote deleted in post:%v\n", input.UserID, input.PostID)
 			return nil
 		}
 	} else {
-		query = `INSERT INTO post_likes (post_id, user_id, type) VALUES ($1, $2, $3)`
+		query = `INSERT INTO posts_likes (post_id, user_id, type) VALUES ($1, $2, $3)`
 		prep, err := r.db.PrepareContext(ctx, query)
 		if err != nil {
 			return err
 		}
 		defer prep.Close()
-		if _, err := prep.ExecContext(ctx, postID, userID, likeType); err != nil {
+		if _, err := prep.ExecContext(ctx, input.PostID, input.UserID, input.LikeType); err != nil {
 			return err
 		}
 	}
@@ -193,21 +198,23 @@ func (r *PostRepository) getPostLikeType(ctx context.Context, postID, userID uin
 	return likeType, nil
 }
 
-// not finshed yet
-func GetLikesAndDislikes(db *sql.DB, postID int) (int, int, error) {
+func (r *PostRepository) getLikesAndDislikes(postID uint) (models.Vote, error) {
 	query := `
-		SELECT 
-			SUM(CASE WHEN type = -1 THEN -1 WHEN type = 1 THEN 1 ELSE 0 END) AS dislikes,
-			SUM(CASE WHEN type = 1 THEN 1 ELSE 0 END) AS likes
-		FROM posts_likes
-		WHERE post_id = $1;
+	SELECT 
+		COALESCE(COUNT(CASE WHEN type = -1 THEN 1 END), 0) AS dislikes,
+		COALESCE(COUNT(CASE WHEN type = 1 THEN 1 END), 0) AS likes
+	FROM posts_likes
+	WHERE post_id = $1;
 	`
 
-	var dislikes, likes int
-	err := db.QueryRow(query, postID).Scan(&dislikes, &likes)
+	var dislikes, likes uint
+	err := r.db.QueryRow(query, postID).Scan(&dislikes, &likes)
 	if err != nil {
-		return 0, 0, err
+		return models.Vote{}, err
 	}
-
-	return likes, dislikes, nil
+	vote := models.Vote{
+		Likes:    likes,
+		Dislikes: dislikes,
+	}
+	return vote, nil
 }
