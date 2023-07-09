@@ -18,7 +18,8 @@ type Post interface {
 	GetALL(ctx context.Context) ([]models.Post, error)
 	GetByID(ctx context.Context, postID uint) (models.Post, error)
 	InsertorDelete(ctx context.Context, input models.PostVote) error
-	//GetALLByTags
+	GetALLByTag(ctx context.Context, tagName string) ([]models.Post, error)
+	GetALLByUserID(ctx context.Context, userID uint) ([]models.Post, error)
 }
 
 type Tag interface {

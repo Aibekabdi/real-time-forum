@@ -7,6 +7,8 @@ import (
 	"forum/internal/models"
 	"forum/internal/repository"
 	"forum/pkg/utils"
+	"strings"
+	"unicode"
 )
 
 type PostService struct {
@@ -64,4 +66,17 @@ func (s *PostService) InsertorDelete(ctx context.Context, input models.PostVote)
 		return errors.New("invalid type of vote")
 	}
 	return s.postRepo.InsertorDelete(ctx, input)
+}
+
+func (s *PostService) GetALLByTag(ctx context.Context, tagName string) ([]models.Post, error) {
+	if len(strings.TrimFunc(tagName, func(r rune) bool {
+		return unicode.IsSpace(r)
+	})) == 0 {
+		return nil, errors.New("invalid tag")
+	}
+	return s.postRepo.GetALLByTag(ctx, tagName)
+}
+
+func (s *PostService) GetALLByUserID(ctx context.Context, userID uint) ([]models.Post, error) {
+	return s.postRepo.GetALLByUserID(ctx, userID)
 }

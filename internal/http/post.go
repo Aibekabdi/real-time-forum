@@ -117,3 +117,31 @@ func (h *Handler) likePostByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, statusResponse{Status: "OK"})
 }
+
+func (h *Handler) getPostsByTag(c *gin.Context) {
+	tagName := c.Param("tagName")
+	posts, err := h.service.Post.GetALLByTag(c.Request.Context(), tagName)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, posts)
+}
+
+func (h *Handler) getPostsByUserID(c *gin.Context) {
+	user, err := getUserFromCtx(c)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if user.Role != models.Roles.User {
+		h.errorResponse(c, http.StatusUnauthorized, "invalid User Role")
+		return
+	}
+	posts, err := h.service.GetALLByUserID(c.Request.Context(), user.UserId)
+	if err != nil {
+		h.errorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, posts)
+}

@@ -30,6 +30,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			posts.GET("/", h.getALLPosts)
 			posts.GET("/:id", h.getPostByID)
+			posts.GET("/tag/:tagName", h.getPostsByTag)
 			{
 				posts.Use(h.userIdentify)
 				posts.POST("/", h.createPost)
@@ -43,6 +44,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			comments.POST("/", h.createComment)
 			comments.DELETE("/:id", h.deleteComment)
 			comments.POST("/like/:id", h.likeCommentByID)
+		}
+		profile := api.Group("/profile")
+		{
+			profile.Use(h.userIdentify)
+			profile.GET("/posts", h.getPostsByUserID)
 		}
 	}
 	return router

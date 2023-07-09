@@ -218,3 +218,107 @@ func (r *PostRepository) getLikesAndDislikes(postID uint) (models.Vote, error) {
 	}
 	return vote, nil
 }
+
+func (r *PostRepository) GetALLByTag(ctx context.Context, tagName string) ([]models.Post, error) {
+	query := `
+			SELECT p.id, p.title, u.id, u.nickname, t.id, t.name
+			FROM posts p
+			INNER JOIN users u ON p.user_id = u.id
+			LEFT JOIN post_tags pt ON pt.post_id = p.id
+			LEFT JOIN tags t ON pt.tag_id = t.id
+			WHERE t.name = $1;
+		`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := prep.QueryContext(ctx, tagName)
+	if err != nil {
+		return nil, err
+	}
+	posts := make(map[uint]*models.Post)
+	for rows.Next() {
+		var (
+			postID   uint
+			title    string
+			authorID uint
+			author   string
+			tagID    sql.NullInt64
+			tagName  sql.NullString
+		)
+		err := rows.Scan(&postID, &title, &authorID, &author, &tagID, &tagName)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := posts[postID]; !ok {
+			posts[postID] = &models.Post{
+				ID:     postID,
+				Title:  title,
+				Author: models.User{ID: authorID, Nickname: author},
+			}
+		}
+		if tagID.Valid && tagName.Valid {
+			posts[postID].Tags = append(posts[postID].Tags, models.Tags{
+				ID:   uint(tagID.Int64),
+				Name: tagName.String,
+			})
+		}
+	}
+	var result []models.Post
+	for _, post := range posts {
+		result = append(result, *post)
+	}
+	return result, nil
+}
+
+func (r *PostRepository) GetALLByUserID(ctx context.Context, userID uint) ([]models.Post, error) {
+	query := `
+			SELECT p.id, p.title, u.id, u.nickname, t.id, t.name
+			FROM posts p
+			INNER JOIN users u ON p.user_id = u.id
+			LEFT JOIN post_tags pt ON pt.post_id = p.id
+			LEFT JOIN tags t ON pt.tag_id = t.id
+			WHERE u.id = $1;
+		`
+	prep, err := r.db.PrepareContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	rows, err := prep.QueryContext(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	posts := make(map[uint]*models.Post)
+	for rows.Next() {
+		var (
+			postID   uint
+			title    string
+			authorID uint
+			author   string
+			tagID    sql.NullInt64
+			tagName  sql.NullString
+		)
+		err := rows.Scan(&postID, &title, &authorID, &author, &tagID, &tagName)
+		if err != nil {
+			return nil, err
+		}
+		if _, ok := posts[postID]; !ok {
+			posts[postID] = &models.Post{
+				ID:     postID,
+				Title:  title,
+				Author: models.User{ID: authorID, Nickname: author},
+			}
+		}
+		if tagID.Valid && tagName.Valid {
+			posts[postID].Tags = append(posts[postID].Tags, models.Tags{
+				ID:   uint(tagID.Int64),
+				Name: tagName.String,
+			})
+		}
+	}
+	var result []models.Post
+	for _, post := range posts {
+		result = append(result, *post)
+	}
+	return result, nil
+}
