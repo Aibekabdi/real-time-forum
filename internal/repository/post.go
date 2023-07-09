@@ -201,8 +201,8 @@ func (r *PostRepository) getPostLikeType(ctx context.Context, postID, userID uin
 func (r *PostRepository) getLikesAndDislikes(postID uint) (models.Vote, error) {
 	query := `
 	SELECT 
-		COALESCE(COUNT(CASE WHEN type = -1 THEN 1 END), 0) AS dislikes,
-		COALESCE(COUNT(CASE WHEN type = 1 THEN 1 END), 0) AS likes
+		COUNT(CASE WHEN type = -1 THEN 1 END) AS dislikes,
+		COUNT(CASE WHEN type = 1 THEN 1 END) AS likes
 	FROM posts_likes
 	WHERE post_id = $1;
 	`
