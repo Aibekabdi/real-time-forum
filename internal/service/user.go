@@ -15,21 +15,21 @@ func newUserService(userRepo repository.User) *UserService {
 	return &UserService{userRepo: userRepo}
 }
 
-func (s *UserService) UpdatePassword(ctx context.Context, oldPsw, newPsw string, userID uint) error {
+func (s *UserService) UpdatePassword(ctx context.Context, updatePsw models.UpdatePassword, userID uint) error {
 	user, err := s.userRepo.GetUserInfo(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	if err := utils.CompareHashAndPassword(user.Password, oldPsw); err != nil {
+	if err := utils.CompareHashAndPassword(user.Password, updatePsw.OldPassword); err != nil {
 		return err
 	}
 
-	if err := utils.IsValidPassword(newPsw); err != nil {
+	if err := utils.IsValidPassword(updatePsw.NewPassword); err != nil {
 		return err
 	}
 
-	newHash, err := utils.GenerateHashPassword(newPsw)
+	newHash, err := utils.GenerateHashPassword(updatePsw.NewPassword)
 	if err != nil {
 		return err
 	}

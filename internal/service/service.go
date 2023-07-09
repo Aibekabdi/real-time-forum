@@ -28,7 +28,7 @@ type Comment interface {
 	InsertorDelete(ctx context.Context, input models.CommentVote) error
 }
 type User interface {
-	UpdatePassword(ctx context.Context, oldPsw, newPsw string, userID uint) error
+	UpdatePassword(ctx context.Context, updatePsw models.UpdatePassword, userID uint) error
 	GetUserInfo(ctx context.Context, userID uint) (models.User, error)
 }
 

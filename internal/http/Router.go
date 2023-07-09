@@ -49,7 +49,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			profile.Use(h.userIdentify)
 			profile.GET("/posts", h.getPostsByUserID)
-			profile.GET("/", nil)
+			profile.GET("/", h.getUserInfo)
+			profile.PATCH("/", h.updatePassword)
 		}
 	}
 	return router
