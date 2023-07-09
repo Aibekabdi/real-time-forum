@@ -27,11 +27,16 @@ type Comment interface {
 	Delete(ctx context.Context, commentID, userID uint) error
 	InsertorDelete(ctx context.Context, input models.CommentVote) error
 }
+type User interface {
+	UpdatePassword(ctx context.Context, oldPsw, newPsw string, userID uint) error
+	GetUserInfo(ctx context.Context, userID uint) (models.User, error)
+}
 
 type Service struct {
 	Auth
 	Post
 	Comment
+	User
 }
 
 func NewService(repo *repository.Repository, secretKey string) *Service {
@@ -39,5 +44,6 @@ func NewService(repo *repository.Repository, secretKey string) *Service {
 		Auth:    newAuthService(repo.User, secretKey),
 		Post:    newPostService(repo.Post, repo.Tag, repo.Comment),
 		Comment: newCommentService(repo.Comment),
+		User:    newUserService(repo.User),
 	}
 }

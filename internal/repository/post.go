@@ -140,7 +140,7 @@ func (r *PostRepository) InsertorDelete(ctx context.Context, input models.PostVo
 			return nil
 		}
 		if currentType != input.LikeType {
-			query = `UPDATE posts_likes SET type = $1 WHERE post_id = $2 AND user_id = $3`
+			query = `UPDATE posts_likes SET type = $1 WHERE post_id = $2 AND user_id = $3;`
 			prep, err := r.db.PrepareContext(ctx, query)
 			if err != nil {
 				return err
@@ -152,7 +152,7 @@ func (r *PostRepository) InsertorDelete(ctx context.Context, input models.PostVo
 			log.Printf("user : %v's vote updated in post:%v\n", input.UserID, input.PostID)
 			return nil
 		} else {
-			query = `DELETE FROM posts_likes WHERE post_id = $1 AND user_id = $2`
+			query = `DELETE FROM posts_likes WHERE post_id = $1 AND user_id = $2;`
 			prep, err := r.db.PrepareContext(ctx, query)
 			if err != nil {
 				return err
@@ -165,7 +165,7 @@ func (r *PostRepository) InsertorDelete(ctx context.Context, input models.PostVo
 			return nil
 		}
 	} else {
-		query = `INSERT INTO posts_likes (post_id, user_id, type) VALUES ($1, $2, $3)`
+		query = `INSERT INTO posts_likes (post_id, user_id, type) VALUES ($1, $2, $3);`
 		prep, err := r.db.PrepareContext(ctx, query)
 		if err != nil {
 			return err

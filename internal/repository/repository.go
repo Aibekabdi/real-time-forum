@@ -10,6 +10,8 @@ import (
 type User interface {
 	Create(ctx context.Context, user models.User) error
 	GetUser(ctx context.Context, loggindField string) (uint, string, error)
+	UpdatePassword(ctx context.Context, password string, userID uint) error
+	GetUserInfo(ctx context.Context, userID uint) (models.User, error)
 }
 
 type Post interface {

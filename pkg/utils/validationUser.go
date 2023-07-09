@@ -16,7 +16,7 @@ func IsValidRegister(user *models.User) error {
 		return err
 	} else if err := isValidUser(user); err != nil {
 		return err
-	} else if err := isValidPassword(user); err != nil {
+	} else if err := IsValidPassword(user.Password); err != nil {
 		return err
 	}
 	var err error
@@ -60,8 +60,8 @@ func isValidUser(user *models.User) error {
 	return nil
 }
 
-func isValidPassword(user *models.User) error {
-	if len(user.Password) < 8 {
+func IsValidPassword(password string) error {
+	if len(password) < 8 {
 		return errors.New("invalid password")
 	}
 next:
@@ -70,7 +70,7 @@ next:
 		"lower case": {unicode.Lower},
 		"numeric":    {unicode.Number, unicode.Digit},
 	} {
-		for _, r := range user.Password {
+		for _, r := range password {
 			if unicode.IsOneOf(classes, r) {
 				continue next
 			}
