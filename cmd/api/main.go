@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"forum/internal/handler/http"
+	"forum/internal/handler/ws"
 	"forum/internal/repository"
 	"forum/internal/server"
 	"forum/internal/service"
@@ -55,7 +56,8 @@ func main() {
 	// preparing handler <- -> service  <- -> repository
 	repo := repository.NewRepository(db)
 	service := service.NewService(repo, secretKey)
-	handler := http.NewHandler(service)
+	wsHandler := ws.NewHandler(service)
+	handler := http.NewHandler(service, wsHandler)
 	// Running Server
 	srv := new(server.Server)
 	go func() {

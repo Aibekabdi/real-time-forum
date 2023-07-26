@@ -3,14 +3,17 @@ package http
 import (
 	"forum/internal/service"
 
+	"forum/internal/handler/ws"
+
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	service *service.Service
+	wsHandler *ws.Handler
+	service   *service.Service
 }
 
-func NewHandler(service *service.Service) *Handler {
+func NewHandler(service *service.Service, wsHandler *ws.Handler) *Handler {
 	return &Handler{service: service}
 }
 
