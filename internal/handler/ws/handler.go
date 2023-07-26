@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"forum/internal/handler"
 	"forum/internal/service"
 	"log"
 	"net/http"
@@ -23,10 +24,11 @@ func NewHandler(service *service.Service) *Handler {
 	return &Handler{service: service, upgrader: upgrader}
 }
 
-func (h *Handler) wsHandler(c *gin.Context) {
-	upgrader, err := h.upgrader.Upgrade(c.Writer, c.Request, nil)
+func (h *Handler) WsHandler(c *gin.Context) {
+	conn, err := h.upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Println(err)
+		handler.ErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
+	log.Println(conn)
 }
