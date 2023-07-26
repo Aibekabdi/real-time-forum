@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"forum/internal/http"
+	"forum/internal/handler/http"
 	"forum/internal/repository"
 	"forum/internal/server"
 	"forum/internal/service"
