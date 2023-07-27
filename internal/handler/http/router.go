@@ -14,7 +14,7 @@ type Handler struct {
 }
 
 func NewHandler(service *service.Service, wsHandler *ws.Handler) *Handler {
-	return &Handler{service: service}
+	return &Handler{service: service, wsHandler: wsHandler}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -54,6 +54,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			profile.GET("/posts", h.getPostsByUserID)
 			profile.GET("/", h.getUserInfo)
 			profile.PATCH("/", h.updatePassword)
+		}
+		chat := api.Group("/chat")
+		{
+			chat.Use(h.userIdentify)
+			chat.GET("/", h.wsHandler.WsHandler)
 		}
 	}
 	return router
