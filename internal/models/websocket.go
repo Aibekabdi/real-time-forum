@@ -30,7 +30,6 @@ var WSEventTypes = struct {
 	MessagesResponse    string
 	ReadMessageRequest  string
 	ReadMessageResponse string
-	Notification        string
 	OnlineUsersRequst   string
 	OnlineUsersResponse string
 	TypingInRequest     string
@@ -47,7 +46,6 @@ var WSEventTypes = struct {
 	MessagesResponse:    "messagesResponse",
 	ReadMessageRequest:  "readMessageRequest",
 	ReadMessageResponse: "readMessageResponse",
-	Notification:        "notification",
 	OnlineUsersRequst:   "onlineUsersRequest",
 	OnlineUsersResponse: "onlineUsersResponse",
 	TypingInRequest:     "typingInRequest",

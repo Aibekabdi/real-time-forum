@@ -1,6 +1,9 @@
 package ws
 
 import (
+	"encoding/json"
+	"forum/internal/models"
+	"log"
 	"sync"
 	"time"
 
@@ -41,6 +44,38 @@ func (h *Handler) readPump(conn *conn) {
 	conn.conn.SetReadDeadline(time.Now().Add(pongWait))
 
 	for {
-		// _, msg, err := 
+		event, err := conn.readEvent()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		switch event.Type {
+		case models.WSEventTypes.Message:
+			err = h.newMessage(conn, &event)
+		}
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
 	}
+}
+
+func (c *conn) readEvent() (models.WSEvent, error) {
+	var event models.WSEvent
+	_, msg, err := c.conn.ReadMessage()
+	if err != nil {
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			log.Printf("error: %v", err)
+		}
+		return event, err
+	}
+	err = json.Unmarshal(msg, &event)
+	return event, err
+}
+
+func (c *conn) writeJSON(data interface{}) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	return c.conn.WriteJSON(data)
 }

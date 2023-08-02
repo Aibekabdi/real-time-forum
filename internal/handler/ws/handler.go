@@ -86,6 +86,8 @@ func (h *Handler) WsHandler(c *gin.Context) {
 	}
 	connection.conn.WriteJSON("Success Connection")
 	// TODO: go routing conn read pump
+
+	go h.readPump(connection)
 	curClient.conns = append(curClient.conns, connection)
 }
 
