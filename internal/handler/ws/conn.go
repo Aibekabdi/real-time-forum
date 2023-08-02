@@ -2,6 +2,7 @@ package ws
 
 import (
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -31,5 +32,15 @@ func (h *Handler) closeConn(c *conn) {
 
 	if len(client.conns) == 0 {
 		delete(h.clients, client.ID)
+	}
+}
+
+func (h *Handler) readPump(conn *conn) {
+	defer h.closeConn(conn)
+	conn.conn.SetReadLimit(maxMessageSize)
+	conn.conn.SetReadDeadline(time.Now().Add(pongWait))
+
+	for {
+		// _, msg, err := 
 	}
 }

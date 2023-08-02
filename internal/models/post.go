@@ -5,8 +5,8 @@ type Post struct {
 	Author   User       `json:"author"`
 	Title    string     `json:"title"`
 	Tags     []Tags     `json:"tags"`
-	Comments []Comments `json:"comments"`
-	Vote     Vote       `json:"votes"`
+	Comments []Comments `json:"comments,omitempty"`
+	Vote     Vote       `json:"votes,omitempty"`
 	Text     string     `json:"text"`
 }
 

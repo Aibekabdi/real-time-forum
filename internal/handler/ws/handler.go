@@ -22,6 +22,12 @@ const (
 	writeWait = 10 * time.Second
 	// max allowed connections for one user
 	maxConnsForUser = 10
+	// max message size allowed
+	maxMessageSize = 512
+	// I/O read buffer size
+	readBufferSize = 1024
+	// I/O write buffer size
+	writeBufferSize = 1024
 )
 
 type Handler struct {
@@ -79,9 +85,8 @@ func (h *Handler) WsHandler(c *gin.Context) {
 		h.closeConn(conn)
 	}
 	connection.conn.WriteJSON("Success Connection")
-	//continue
+	// TODO: go routing conn read pump
 	curClient.conns = append(curClient.conns, connection)
-
 }
 
 func getUserFromCtx(c *gin.Context) (models.UserToken, error) {
