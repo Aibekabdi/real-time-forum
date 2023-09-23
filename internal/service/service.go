@@ -32,11 +32,16 @@ type User interface {
 	GetUserInfo(ctx context.Context, userID uint) (models.User, error)
 }
 
+type Chat interface {
+	GetMessages(ctx context.Context, senderID, receiverID, lastMessageID, limit uint) ([]models.Message, error)
+	Create(ctx context.Context, senderID, receiverID uint, content string) (models.Message, error)
+}
 type Service struct {
 	Auth
 	Post
 	Comment
 	User
+	Chat
 }
 
 func NewService(repo *repository.Repository, secretKey string) *Service {
@@ -45,5 +50,6 @@ func NewService(repo *repository.Repository, secretKey string) *Service {
 		Post:    newPostService(repo.Post, repo.Tag, repo.Comment),
 		Comment: newCommentService(repo.Comment),
 		User:    newUserService(repo.User),
+		Chat:    nil,
 	}
 }

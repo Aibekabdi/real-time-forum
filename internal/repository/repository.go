@@ -37,12 +37,17 @@ type Comment interface {
 	GetByPostID(ctx context.Context, postID uint) ([]models.Comments, error)
 	InsertorDelete(ctx context.Context, input models.CommentVote) error
 }
+type Chat interface {
+	GetMessages(ctx context.Context, senderID, receiverID, lastMessageID, limit uint) ([]models.Message, error)
+	Create(ctx context.Context, message *models.Message) (uint, error)
+}
 
 type Repository struct {
 	User
 	Post
 	Tag
 	Comment
+	Chat
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -51,5 +56,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Post:    newPostRepository(db),
 		Tag:     newTagRepository(db),
 		Comment: newCommentRepository(db),
+		Chat:    newChatRepository(db),
 	}
 }

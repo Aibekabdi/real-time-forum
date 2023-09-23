@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS post_tags(
     foreign key (tag_id) references tags (id) on delete cascade
 );
 
-CREATE TABLE posts_likes (
+CREATE TABLE  IF NOT EXISTS posts_likes (
     post_id integer not null,
     user_id integer not null,
     type integer not null,
@@ -47,11 +47,22 @@ CREATE TABLE posts_likes (
     foreign key (user_id) references users(id) on delete cascade
 );
 
-CREATE TABLE comments_likes (
+CREATE TABLE  IF NOT EXISTS comments_likes (
     comment_id integer not null,
     user_id integer not null,
     type integer not null,
     primary key (comment_id, user_id),
     foreign key(comment_id) references comments(id) on delete cascade,
     foreign key(user_id) references users(id) on delete cascade
+);
+
+Create TABLE  IF NOT EXISTS messages (
+    id serial not null unique,
+    sender_id integer not null,
+    receiver_id integer not null,
+    content text not null,
+    sent_at datetime,
+    read boolean not null,
+    foreign key(sender_id) references users(id) on delete cascade,
+    foreign key(receiver_id) references users(id) on delete cascade
 );
