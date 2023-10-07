@@ -2,6 +2,7 @@ package ws
 
 import (
 	"encoding/json"
+	"fmt"
 	"forum/internal/models"
 	"log"
 	"sync"
@@ -52,6 +53,23 @@ func (h *Handler) readPump(conn *conn) {
 		switch event.Type {
 		case models.WSEventTypes.Message:
 			err = h.newMessage(conn, &event)
+		case models.WSEventTypes.MessagesRequest:
+			// TODO
+			fmt.Println("get messages request")
+		case models.WSEventTypes.ChatsRequest:
+			// TODO
+			fmt.Println("get chats request")
+		case models.WSEventTypes.ReadMessageRequest:
+			// TODO
+			fmt.Println("read message request")
+		case models.WSEventTypes.OnlineUsersRequest:
+			// TODO
+			fmt.Println("get online users")
+		case models.WSEventTypes.TypingInRequest:
+			// TODO
+			fmt.Println("typing request")
+		case models.WSEventTypes.PongMessage:
+			err = conn.conn.SetReadDeadline(time.Now().Add(h.pongWait))
 		}
 		if err != nil {
 			log.Println(err.Error())

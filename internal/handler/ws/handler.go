@@ -41,8 +41,8 @@ type Handler struct {
 
 func NewHandler(service *service.Service) *Handler {
 	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  readBufferSize,
+		WriteBufferSize: writeBufferSize,
 		CheckOrigin:     func(r *http.Request) bool { return true },
 	}
 	return &Handler{

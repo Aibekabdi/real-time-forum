@@ -27,16 +27,16 @@ func (h *Handler) newMessage(conn *conn, event *models.WSEvent) error {
 	}
 
 	h.sendEventToClient(&models.WSEvent{
-		Type:       models.WSEventTypes.MessagesResponse,
+		Type:       models.WSEventTypes.Message,
 		Body:       message,
 		ReceiverID: message.SenderID,
 	})
 
 	h.sendEventToClient(&models.WSEvent{
-		Type:       models.WSEventTypes.MessagesResponse,
+		Type:       models.WSEventTypes.Message,
 		Body:       message,
 		ReceiverID: message.ReceiverID,
 	})
-	
+
 	return nil
 }
