@@ -54,8 +54,7 @@ func (h *Handler) readPump(conn *conn) {
 		case models.WSEventTypes.Message:
 			err = h.newMessage(conn, &event)
 		case models.WSEventTypes.MessagesRequest:
-			// TODO
-			fmt.Println("get messages request")
+			err = h.getMessages(conn, &event)
 		case models.WSEventTypes.ChatsRequest:
 			// TODO
 			fmt.Println("get chats request")

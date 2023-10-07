@@ -33,7 +33,7 @@ type User interface {
 }
 
 type Chat interface {
-	GetMessages(ctx context.Context, senderID, receiverID, lastMessageID, limit uint) ([]models.Message, error)
+	GetMessages(ctx context.Context, senderID, receiverID, lastMessageID uint) ([]models.Message, error)
 	Create(ctx context.Context, senderID, receiverID uint, content string) (models.Message, error)
 }
 type Service struct {
